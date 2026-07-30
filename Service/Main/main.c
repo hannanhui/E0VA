@@ -108,17 +108,14 @@ int main()
 	LIN_DRV_Init(0,&lin_InitConfig,&linState);
 	LIN_DRV_InstallCallback(0,LIN_DRV_NotifyLinIf);
 
-	if(APP_Jump == 0x01) /*�ظ�10 02*/
+	if(APP_Jump == 0x01) /* reply 50 02 after APP->Boot jump (TX done in LIN PID callback) */
 	{
 		Dcm_Send_1002 = 0;
 		while(Dcm_Send_1002 != 1)
 		{
 			time++;
 		}
-		uint8_t txBuff[8]={0x74,0x06,0x50,0x02,0x00,0x32,0x00,0xc8};
-		LIN_DRV_SetTimeoutCounter(0,1000U);
-    	LIN_LPUART_DRV_SendFrameData(0, txBuff, 8);
-		APP_Jump = 0x00;
+		/* 50 02 already transmitted on first SRF(0x3D) in LIN_DRV_NotifyLinIf */
 		Dcm_NewActiveSession = DCM_PROGRAMMING_SESSION;
 		Dcm_NewActiveSessionIdx = 1;
 		Dcm_ProtocolStartState = 1;

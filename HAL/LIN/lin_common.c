@@ -157,6 +157,10 @@ uint8_t LIN_DRV_MakeChecksumByte(const uint8_t * buffer,
 
 extern uint8 APP_Jump;
 volatile uint8 Dcm_Send_1002 = 0;
+
+/* Positive response for 10 02 after APP->Boot jump. Must be static: TX is non-blocking. */
+static uint8_t s_AppJump_5002_Resp[8] = {0x74U, 0x06U, 0x50U, 0x02U, 0x00U, 0x32U, 0x00U, 0xC8U};
+
 void LIN_DRV_NotifyLinIf(uint32_t instance,void*linState)
 {
 	lin_state_t *state =(lin_state_t*)linState;
@@ -187,32 +191,58 @@ void LIN_DRV_NotifyLinIf(uint32_t instance,void*linState)
     switch (eventId)
     {
         case LIN_PID_OK:
+            /* APP jumped to Boot for 10 02: only answer the next SRF(0x3D), ignore all other IDs.
+             * Triggering on any PID (old code) can start TX on an application frame and corrupt LIN. */
+            if(APP_Jump == 0x01U)
+            {
+                if(pid == 0x7DU)
+                {
+                    LIN_DRV_SetTimeoutCounter(instance, 1000U);
+                    if(STATUS_SUCCESS == LIN_DRV_SendFrameData(instance, s_AppJump_5002_Resp, 8U))
+                    {
+                        Dcm_Send_1002 = 1U;
+                        APP_Jump = 0x00U;
+                    }
+                    else
+                    {
+                        (void)LIN_DRV_GotoIdleState(instance);
+                    }
+                }
+                else
+                {
+                    (void)LIN_DRV_GotoIdleState(instance);
+                }
+                break;
+            }
+
             LinPdu.Pid = pid;
             LinPdu.Cs = LIN_CLASSIC_CS;
             LinPdu.Dl = 8;
             LinPdu.SduPtr = (uint8_t *)data;
-            if(APP_Jump == 0x01)
-            {
-            Dcm_Send_1002 = 1;
-            }
-										 
+            LinPdu.Drc = LIN_FRAMERESPONSE_IGNORE;
+
             if(E_OK == LinIf_HeaderIndication(0,&LinPdu))
             {
                 if(LIN_FRAMERESPONSE_TX == LinPdu.Drc)
                 {
-
-									  LIN_DRV_SetTimeoutCounter(0,1000U);
+                    LIN_DRV_SetTimeoutCounter(instance,1000U);
                     LIN_DRV_SendFrameData(instance,LinPdu.SduPtr,LinPdu.Dl);
                 }
                 else if(LIN_FRAMERESPONSE_RX == LinPdu.Drc)
                 {
-									  LIN_DRV_SetTimeoutCounter(0,1000U);
+                    LIN_DRV_SetTimeoutCounter(instance,1000U);
                     LIN_DRV_ReceiveFrameData(instance,LinPdu.SduPtr,LinPdu.Dl);
                 }
+                else
+                {
+                    /* Irrelevant PID (vehicle application frames): must leave RECV_PID,
+                     * otherwise following data bytes are parsed as PIDs and LIN collapses. */
+                    (void)LIN_DRV_GotoIdleState(instance);
+                }
             }
-            if(LIN_NODE_STATE_RECV_PID == state->currentNodeState)
+            else
             {
-                //LIN_DRV_AbortTransferData(0);
+                (void)LIN_DRV_GotoIdleState(instance);
             }
             break;
         case LIN_TX_COMPLETED:
@@ -223,6 +253,7 @@ void LIN_DRV_NotifyLinIf(uint32_t instance,void*linState)
             break;
         case LIN_SYNC_ERROR:
 					LinIf_LinErrorIndication(0,LIN_ERR_HEADER);
+					break;
         case LIN_FRAME_ERROR:
 					LinIf_LinErrorIndication(0,LIN_ERR_RESP_STOPBIT);
              break;
@@ -232,6 +263,10 @@ void LIN_DRV_NotifyLinIf(uint32_t instance,void*linState)
         case LIN_TX_BIT_ERR:
           	LinIf_LinErrorIndication(0,LIN_ERR_RESP_DATABIT);
              break;
+        case LIN_RX_OVERRUN:
+            /* Driver already returns to IDLE; notify upper layer for diagnostics. */
+            LinIf_LinErrorIndication(0,LIN_ERR_INC_RESP);
+            break;
         case LIN_TX_TIMEOUT:
 				case LIN_RX_TIMEOUT:
          LinIf_LinErrorIndication(0,LIN_ERR_NO_RESP);

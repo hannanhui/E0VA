@@ -587,6 +587,11 @@ void LIN_LPUART_Total_IRQHandler(uint32_t instance)
 				{
 							LIN_LPUART_Rx_IRQHandler();
 				}
+				else
+				{
+					/* IDLE/SLEEP: drain unexpected RX to avoid FIFO overrun on busy vehicle schedule */
+					UART_EmptyRxFifo(LIN_ID);
+				}
         break;
         
         case UART_INTSTA_IID_BYDET:

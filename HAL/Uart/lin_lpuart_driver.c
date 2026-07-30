@@ -323,6 +323,8 @@ status_t LIN_LPUART_DRV_Init(uint32_t instance,
     linConfig.oscFreq = 8000000;
     linConfig.mode = linUserConfig->nodeFunction;
     linConfig.autoSyncEn = linUserConfig->autobaudEnable;
+    /* Boot only needs diagnostic MRF/SRF; filter out vehicle application IDs in HW. */
+    linConfig.idFilterEn = ENABLE;
         
     SYSCTRL_ResetModule(SYSCTRL_LIN_ID);
     SYSCTRL_EnableModule(SYSCTRL_LIN_ID);
@@ -334,6 +336,9 @@ status_t LIN_LPUART_DRV_Init(uint32_t instance,
     
     UART_LinConfig(LIN_ID, &linConfig);
     UART_FIFOConfig(LIN_ID, &g_uartFifoCfg);
+    (void)UART_LinEnableIdFilter(LIN_ID, 0U, 0x3CU);
+    (void)UART_LinEnableIdFilter(LIN_ID, 1U, 0x3DU);
+    UART_LinDisableVagueIdFilter(LIN_ID);
   
     UART_IntMask(LIN_ID, UART_INT_RBFI ,UNMASK);
     UART_IntMask(LIN_ID, UART_INT_LSI, UNMASK);
@@ -1089,6 +1094,9 @@ status_t LIN_LPUART_DRV_GotoIdleState(uint32_t instance)
     /* Enable LIN break detect interrupt */
 	(void)LPUART_ClearStatusFlag(LPUART_LIN_BREAK_DETECT);
 
+    /* Discard leftover RX bytes so ignored application frames cannot overflow FIFO. */
+    UART_EmptyRxFifo(LIN_ID);
+
     /* Change node's current state to IDLE */
     linCurrentState->currentNodeState = LIN_NODE_STATE_IDLE;
 
@@ -1211,6 +1219,9 @@ static void LIN_LPUART_DRV_ProcessBreakDetect(uint32_t instance)
 		LPUART_SetBreakCharDetectLength( LPUART_BREAK_CHAR_11_BIT_MINIMUM);
 		/* Disable LIN Break Detect Interrupt */
 		//LPUART_SetIntMode(LPUART_LIN_BREAK_DETECT, false);
+
+        /* Drop stale bytes from ignored frames before expecting SYNC 0x55. */
+        UART_EmptyRxFifo(LIN_ID);
 
 		/* Set flag LIN bus busy */
 		linCurrentState->isBusBusy = true;
