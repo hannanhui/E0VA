@@ -1,0 +1,350 @@
+/**
+ * @file        Dcm_UDS0x23.c
+ * @brief       AUTOSAR 4.2.2 - 4.2.2 driver source file.
+ * @details     Dcm driver source file, containing the C implementation of Autosar API specification
+ *              and other variables and functions that are exported by the Dcm driver.
+ * @version     1.2.0
+ *
+ * @addtogroup  Dcm
+ * @{
+ */
+/*====================================================================================================*
+ * AngHui AUTOSAR BSW.
+ *
+ * Copyright(C) 2023 GuoKeAngHui Inc.
+ *
+ * All rights reserved.
+ *
+ * This file is part of AngHui AUTOSAR BSW, contains proprietary information.
+ * Passing on and copying of this document, and communication of its contents
+ * is not permitted without prior written authorization.
+ *====================================================================================================*/
+
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+/* PRQA S 0292, 0857, 0491, 3218, 2877, 5087 EOF #
+ *
+ * 1.0292 -- Violates MISRA 2004 Required Rule 3.1, Source file has comments containing one of the
+ * characters '$', '@' or '`'.
+ *
+ * 2.0857 -- Violates MISRA 2004 Required Rule 1.1, Number of macro definitions exceeds 1024 - program
+ * does not conform strictly to ISO:C90.
+ *
+ * 3.0491 -- Violates MISRA 2004 Required Rule 17.4, Array subscripting applied to an object of pointer
+ * type.
+ *
+ * 4.3218 -- Violates MISRA 2004 Required Rule 17.4, File scope static, 'Dcm_UDS0x23Status', is only
+ * accessed in one function.
+ *
+ * 5.2877 -- Violates MISRA 2004 Required Rule 21.1, This loop will never be executed more than once.
+ *
+ * 6.5087 -- Violates MISRA 2004 Required Rule 19.1, Use of #include directive after code fragment.
+ *
+ * @page misra_violations MISRA-C:2004 violations
+ */
+
+/*====================================================================================================*
+ *                                           INCLUDE FILES
+ *====================================================================================================*/
+#include "Dcm_Internal.h"
+
+#ifdef AH_TEST_DCM
+#include "TestCode.h"
+#endif /* #ifdef AH_TEST_DCM */
+
+#if(STD_ON == DCM_UDS0x23_ENABLE)
+#if(STD_ON == DCM_UDS0x23_INTERNAL_FNC_ENABLE)
+/**
+ * @req [SWS_Dcm_00492] The Dcm module shall implement the ReadMemoryByAddress (service 0x23) of the
+ * 		Unified Diagnostic Services.
+ *
+ * @req [SWS_Dcm_01158] The configured ranges of memory address (DcmDspReadMemoryRangeHigh and
+ * 		DcmDspReadMemoryRangeLow) should not overlap each other.
+ */
+/*====================================================================================================*
+ *                                  SOURCE FILE VERSION INFORMATION
+ *====================================================================================================*/
+#define DCM_UDS0X23_VENDOR_ID_C                            	(0x00U)
+#define DCM_UDS0X23_AR_RELEASE_MAJOR_VERSION_C             	(0x04U)
+#define DCM_UDS0X23_AR_RELEASE_MINOR_VERSION_C             	(0x02U)
+#define DCM_UDS0X23_AR_RELEASE_REVISION_VERSION_C          	(0x02U)
+#define DCM_UDS0X23_SW_MAJOR_VERSION_C                     	(0x01U)
+#define DCM_UDS0X23_SW_MINOR_VERSION_C                     	(0x02U)
+#define DCM_UDS0X23_SW_PATCH_VERSION_C                     	(0x00U)
+/*====================================================================================================*
+ *                                         FILE VERSION CHECKS
+ *====================================================================================================*/
+/* Check if current file and Dcm_Internal header file are of the same vendor */
+#if(DCM_UDS0X23_VENDOR_ID_C != DCM_INTERNAL_VENDOR_ID )
+#error "Dcm_UDS0x23.c and Dcm_Internal.h have different vendor id"
+#endif
+/* Check if current file and Dcm_Internal header file are of the same Autosar version */
+#if(\
+		(DCM_UDS0X23_AR_RELEASE_MAJOR_VERSION_C != DCM_INTERNAL_AR_RELEASE_MAJOR_VERSION) || \
+		(DCM_UDS0X23_AR_RELEASE_MINOR_VERSION_C != DCM_INTERNAL_AR_RELEASE_MINOR_VERSION) || \
+		(DCM_UDS0X23_AR_RELEASE_REVISION_VERSION_C != DCM_INTERNAL_AR_RELEASE_REVISION_VERSION) \
+)
+#error "AutoSar Version Number of Dcm_UDS0x23.c and Dcm_Internal.h are different"
+#endif
+/* Check if current file and Dcm_Internal header file are of the same software version */
+#if(\
+		(DCM_UDS0X23_SW_MAJOR_VERSION_C != DCM_INTERNAL_SW_MAJOR_VERSION) || \
+		(DCM_UDS0X23_SW_MINOR_VERSION_C != DCM_INTERNAL_SW_MINOR_VERSION) || \
+		(DCM_UDS0X23_SW_PATCH_VERSION_C != DCM_INTERNAL_SW_PATCH_VERSION) \
+)
+#error "Software Version Number of Dcm_UDS0x23.c and Dcm_Internal.h are different"
+#endif
+/*====================================================================================================*
+ *                                   EXTERNAL FUNCTION DECLARATIONS
+ *====================================================================================================*/
+
+/*====================================================================================================*
+ *                                           LOCAL TYPEDEFS
+ *====================================================================================================*/
+
+/*====================================================================================================*
+ *                                            LOCAL MACROS
+ *====================================================================================================*/
+#ifdef AH_UNITTEST_ENABLED
+
+	#ifdef STATIC
+		#undef STATIC
+		#define STATIC
+	#else
+		#define STATIC
+	#endif /* STATIC */
+
+	#ifdef INLINE
+		#undef INLINE
+		#define INLINE
+	#else
+		#define STATIC_INLINE
+	#endif /* INLINE */
+
+	#ifdef STATIC_INLINE
+		#undef STATIC_INLINE
+		#define STATIC_INLINE
+	#else
+		#define STATIC_INLINE
+	#endif /* STATIC_INLINE */
+#else
+	#ifndef STATIC
+		#define STATIC static
+	#endif /* STATIC */
+
+	#ifndef INLINE
+		#define INLINE inline
+	#endif /* INLINE */
+
+	#ifndef STATIC_INLINE
+		#define STATIC_INLINE static inline
+	#endif /* STATIC_INLINE */
+
+#endif /* AH_UNITTEST_ENABLED */
+/*====================================================================================================*
+ *                                           LOCAL CONSTANTS
+ *====================================================================================================*/
+
+/*====================================================================================================*
+ *                                           LOCAL VARIABLES
+ *====================================================================================================*/
+#define DCM_START_SEC_VAR_NO_INIT_UNSPECIFIED
+#include "Dcm_MemMap.h"
+
+/**
+ * @brief	Store internal status of service 0x23 during its processing.
+ */
+STATIC VAR(Dcm_RwMemoryStatusType, DCM_VAR)Dcm_UDS0x23Status;
+
+#define DCM_STOP_SEC_VAR_NO_INIT_UNSPECIFIED
+#include "Dcm_MemMap.h"
+/*====================================================================================================*
+ *                                      LOCAL FUNCTION PROTOTYPES
+ *====================================================================================================*/
+
+/*====================================================================================================*
+ *                                           LOCAL FUNCTIONS
+ *====================================================================================================*/
+
+/*====================================================================================================*
+ *                                          GLOBAL FUNCTIONS
+ *====================================================================================================*/
+#define DCM_START_SEC_CODE
+#include "Dcm_MemMap.h"
+
+/**
+ * @brief			Dcm_UDS0x23
+ * @details			Internal processing interface for Service 0x23.
+ *
+ * @param[in]		OpStatus:Operating state.
+ * @param[in]		pMsgContext:Message-related information for one diagnostic protocol identifier.
+ * 					The pointers in pMsgContext shall point behind the SID.
+ *
+ * @param[out]		ErrorCode:If the operation <Module>_<DiagnosticService> returns value  E_NOT_OK,
+ * 					the DCM module shall send a negative response  with NRC code equal to the parameter
+ * 					ErrorCode parameter value.
+ *
+ * @return        	Result of this operation.
+ * @retval			E_OK:Request was successful.
+ * @retval			E_NOT_OK:Request was not successful.
+ */
+FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x23
+(
+	Dcm_OpStatusType OpStatus,
+	P2VAR(Dcm_MsgContextType, AUTOMATIC, DCM_VAR)pMsgContext,
+	P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
+)
+{
+	Std_ReturnType result = (Std_ReturnType)E_NOT_OK;
+
+	uint8 u8Index;
+	uint8 u8FormatId;
+	uint8 u8AddrLen;
+	uint8 u8SizeLen;
+	uint8 u8ReqMemoryId;
+	uint32 u32Addr = 0u;
+	uint32 u32Size = 0u;
+	Dcm_ReturnReadMemoryType readRet = (Dcm_ReturnReadMemoryType)DCM_READ_FAILED;
+#if(0u != DCM_DSP_MEMORY_FORMAT_ID_NUM)
+	const Dcm_DspMemoryType* pMemory = Dcm_ConfigPtr->DcmDsp->DcmDspMemory;
+#endif /* #if(0u != DCM_DSP_MEMORY_FORMAT_ID_NUM) */
+
+	if((DCM_PENDING != OpStatus) && (DCM_FORCE_RCRRP_OK != OpStatus))
+	{
+		Dcm_UDS0x23Status.MemoryId = 0u;
+		Dcm_UDS0x23Status.MemoryAddr = 0xFFFFFFFFu;
+		Dcm_UDS0x23Status.MemorySize = 0u;
+
+		if(4u > pMsgContext->ReqDataLen)
+		{
+			*ErrorCode = DCM_E_INCORRECTMESSAGELENGTHORINVALIDFORMAT;
+		}
+		else
+		{
+			u8FormatId = pMsgContext->ReqData[1];
+
+#if(0u != DCM_DSP_MEMORY_FORMAT_ID_NUM)
+			/**
+			 * @req [SWS_Dcm_00853] On reception of the UDS Service ReadMemoryByAddress (0x23), the DCM
+			 * 		shall check if the requested AddressAndLengthFormatIdentifier is supported (refer to
+			 * 		configuration parameter DcmDspSupportedAddressAndLengthFormatIdentifier), Otherwise
+			 * 		the NRC 0x31 (requestOutOfRange) shall be responded. In case the container
+			 * 		DcmDspAddressAndLengthFormatIdentifier is not present, the DCM shall accept all
+			 * 		possible AddressAndLengthFormatIdentifiers. ).
+			 */
+			for(u8Index = 0u; u8Index < DCM_DSP_MEMORY_FORMAT_ID_NUM; u8Index++)
+			{
+				if(u8FormatId == pMemory->DcmDspSupportedAddressAndLengthFormatIdentifier[u8Index])
+				{
+					break;
+				}
+			}
+			if(DCM_DSP_MEMORY_FORMAT_ID_NUM == u8Index)
+			{
+				*ErrorCode = DCM_E_REQUESTOUTOFRANGE;
+			}
+			else
+#endif /* #if(0u != DCM_DSP_MEMORY_FORMAT_ID_NUM) */
+			{
+				u8AddrLen = (u8FormatId & 0x0Fu);
+				u8SizeLen = ((u8FormatId & 0xF0u) >> 4u);
+
+				if(pMsgContext->ReqDataLen != ((uint32)u8AddrLen + (uint32)u8SizeLen + 2u))
+				{
+					*ErrorCode = DCM_E_INCORRECTMESSAGELENGTHORINVALIDFORMAT;
+				}
+				else
+				{
+					for(u8Index = 0u; u8Index < u8AddrLen; u8Index++)
+					{
+						u32Addr <<= 8u;
+						u32Addr |= ((uint32)pMsgContext->ReqData[u8Index + 2u]);
+					}
+
+					for(u8Index = 0u; u8Index < u8SizeLen; u8Index++)
+					{
+						u32Size <<= 8u;
+						u32Size |= ((uint32)pMsgContext->ReqData[u8Index + u8AddrLen + 2u]);
+					}
+
+					u8ReqMemoryId = pMsgContext->ReqData[2];
+
+#if(STD_ON != DCM_UDS0x2C_ENABLE)
+					if((Std_ReturnType)E_OK == DspInternal_MemoryAddrCheck(u32Addr, u32Size, (boolean)TRUE, &u8ReqMemoryId, ErrorCode))
+#else
+					if((Std_ReturnType)E_OK == DspInternal_MemoryAddrCheck(u32Addr, u32Size, (boolean)TRUE, &u8ReqMemoryId, NULL_PTR, NULL_PTR, ErrorCode))
+#endif /* #if(STD_ON != DCM_UDS0x2C_ENABLE) */
+					{
+						if(pMsgContext->ResMaxDataLen < (u32Size + 1u))
+						{
+							*ErrorCode = DCM_E_RESPONSETOOLONG;
+						}
+						else
+						{
+							Dcm_UDS0x23Status.MemoryAddr = u32Addr;
+							Dcm_UDS0x23Status.MemorySize = u32Size;
+							Dcm_UDS0x23Status.MemoryId = u8ReqMemoryId;
+
+							readRet = (Dcm_ReturnReadMemoryType)DCM_READ_OK;
+						}
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		readRet = (Dcm_ReturnReadMemoryType)DCM_READ_OK;
+	}
+
+	if((Dcm_ReturnReadMemoryType)DCM_READ_OK == readRet)
+	{
+		/**
+		 * @req [SWS_Dcm_00495] On reception of the UDS Service ReadMemoryByAddress (0x23), and after
+		 * 		verification of the validity of the request (see [SWS_Dcm_00493 and [SWS_Dcm_00494) the
+		 * 		DCM module shall call the callout Dcm_ReadMemory().
+		 */
+		readRet = Dcm_ReadMemory(\
+					OpStatus, Dcm_UDS0x23Status.MemoryId, Dcm_UDS0x23Status.MemoryAddr,\
+					Dcm_UDS0x23Status.MemorySize, &pMsgContext->ResData[1], ErrorCode\
+					);
+
+		if((Dcm_ReturnReadMemoryType)DCM_READ_OK == readRet)
+		{
+			pMsgContext->ResData[0] = 0x63u;
+			pMsgContext->ResDataLen = (Dcm_UDS0x23Status.MemorySize + 1u);
+
+			result = (Std_ReturnType)E_OK;
+		}
+		else if((Dcm_ReturnReadMemoryType)DCM_READ_PENDING == readRet)
+		{
+			Dcm_OpState = DCM_PENDING;
+			*ErrorCode = DCM_E_RESPONSE_PENDING;
+		}
+		else if((Dcm_ReturnReadMemoryType)DCM_READ_FORCE_RCRRP == readRet)
+		{
+			Dcm_OpState = DCM_FORCE_RCRRP_OK;
+			*ErrorCode = DCM_E_RESPONSE_PENDING;
+		}
+		else
+		{
+			/* Nothing to do here. */
+			;
+		}
+	}
+
+	return result;
+}
+
+#define DCM_STOP_SEC_CODE
+#include "Dcm_MemMap.h"
+
+#endif /* #if(STD_ON == DCM_UDS0x23_INTERNAL_FNC_ENABLE) */
+#endif /* #if(STD_ON == DCM_UDS0x14_ENABLE) */
+
+#ifdef __cplusplus
+}
+#endif
+/** @} */
