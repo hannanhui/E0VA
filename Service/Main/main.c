@@ -108,16 +108,44 @@ int main()
 	LIN_DRV_Init(0,&lin_InitConfig,&linState);
 	LIN_DRV_InstallCallback(0,LIN_DRV_NotifyLinIf);
 
-	if(APP_Jump == 0x01) /*�ظ�10 02*/
+	if(APP_Jump == 0x01) /* reply 50 02 after APP jumped on 10 02 */
 	{
+		/*
+		 * Vehicle bus keeps scheduling app frames (0A/1D/31...) after 10 02.
+		 * A pure busy-wait with no LIN timeout service lets the slave stick under
+		 * that traffic; quiet bench/Tumos still works. Service timeouts while
+		 * waiting for the 3D slot indicated by Dcm_Send_1002.
+		 */
 		Dcm_Send_1002 = 0;
+		time = 0;
 		while(Dcm_Send_1002 != 1)
 		{
+			LIN_DRV_TimeoutService(0);
 			time++;
+			/* guard: avoid infinite spin if 3D never indicates ready */
+			if(time >= 2000000UL)
+			{
+				break;
+			}
 		}
-		uint8_t txBuff[8]={0x74,0x06,0x50,0x02,0x00,0x32,0x00,0xc8};
-		LIN_DRV_SetTimeoutCounter(0,1000U);
-    	LIN_LPUART_DRV_SendFrameData(0, txBuff, 8);
+		if(Dcm_Send_1002 == 1)
+		{
+			uint8_t txBuff[8]={0x74,0x06,0x50,0x02,0x00,0x32,0x00,0xc8};
+			uint32_t tx_guard = 0;
+			LIN_DRV_SetTimeoutCounter(0,1000U);
+			LIN_LPUART_DRV_SendFrameData(0, txBuff, 8);
+			/* Wait for out-of-band TX to finish, then force idle for later 27 11 */
+			while((LIN_DRV_GetCurrentNodeState(0) == LIN_NODE_STATE_SEND_DATA) &&
+			      (tx_guard < 100000UL))
+			{
+				LIN_DRV_TimeoutService(0);
+				tx_guard++;
+			}
+			if(LIN_DRV_GetCurrentNodeState(0) != LIN_NODE_STATE_IDLE)
+			{
+				LIN_DRV_GotoIdleState(0);
+			}
+		}
 		APP_Jump = 0x00;
 		Dcm_NewActiveSession = DCM_PROGRAMMING_SESSION;
 		Dcm_NewActiveSessionIdx = 1;

@@ -129,9 +129,11 @@ static void Scheduler_Periodic_1000mS(void)
 
 static void Scheduler_LIN_Timeout_Handler(void)
 {
-
-	/* Timer Interrupt Handler */
-   // l_lld_timeout_service_LI0();
+	/* Timer Interrupt Handler
+	 * Must service LIN frame/header timeouts. Without this, after APP->Boot
+	 * jump the slave can stick in RECV/SEND under vehicle app-schedule traffic
+	 * (IDs like 0A/1D/31 keep timing out) and die before/at 27 11. */
+	l_lld_timeout_service_LI0();
 }
 
 

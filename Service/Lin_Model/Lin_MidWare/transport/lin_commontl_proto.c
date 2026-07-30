@@ -333,13 +333,14 @@ static void lin_tl_handler_rx_completed(l_ifc_handle iii,uint8_t id)
 	uint8_t i;
 	if(0x3C == id)
 	{
-	
-		for(i=0;i<LIN_DIAG_TX_BUF_SIZE;i++)
+		for(i=0;i<LIN_DIAG_RX_BUF_SIZE;i++)
 		{
 			g_lin_Diag_Rx_data_buffer[i] = g_lin_protocol_state_array[iii].response_buffer_ptr[i];
 		}
 		if (commontl_callback_Ptr->Diag_Rx_CompleteCallback != NULL)
 	    {
+	        /* Was empty: 3C RX never notified upper layer */
+	        commontl_callback_Ptr->Diag_Rx_CompleteCallback();
 	    }
 	}
 	else if(0x3E == id)
