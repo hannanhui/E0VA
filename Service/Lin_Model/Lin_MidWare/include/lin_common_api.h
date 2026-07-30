@@ -1,0 +1,150 @@
+/**************************************************************************************************/
+/*                                                                                                */
+/*   Project      :                                                                               */
+/*   Type         :      H source file                                                            */
+/*   Name         :      lin_common_api.h                                                         */
+/*   Instance     :                                                                               */
+/*   Author       :      Ed                                                                       */
+/*   Modify date  :      2025-12-22 14:00:05 PM                                                   */
+/*   Description  :                                                                               */
+/*                                                                                                */
+/*                                                                                                */
+/*   Compiler    :       KungFu32 IDE  [Version: V1.0.20.3]                                       */
+/*   Hardware    :       ChipOn microcontroller KF32A Family [KF32A156MQV]                        */
+/*   Version     :       V1.0                                                                     */
+/*                                                                                                */
+/*                                                                                                */
+/*   All rights reserved. Distribution or duplication without previous written agreement of the   */
+/*   owner prohibited.                                                                            */
+/*                                                                                                */
+/**************************************************************************************************/
+/*
+ * Copyright (c) 2015-2016, Freescale Semiconductor, Inc.
+ * Copyright 2016 NXP
+ * All rights reserved.
+ *
+ * THIS SOFTWARE IS PROVIDED BY NXP "AS IS" AND ANY EXPRESSED OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL NXP OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+#ifndef LIN_COMMON_API_H
+#define LIN_COMMON_API_H
+
+/*!
+ * @addtogroup common_core_api_group
+ * @{
+ */
+
+#include "lin.h"
+
+/* *****************************************************************************
+ * Definitions
+ ******************************************************************************/
+/* Define word status macro */
+#define SAVE_CONFIG_SET             0x0040U       /*!< Save configuration */
+#define EVENT_TRIGGER_COLLISION_SET 0x0020U       /*!< Event triggered frame collision */
+#define BUS_ACTIVITY_SET            0x0010U       /*!< Bus activity */
+#define GO_TO_SLEEP_SET             0x0008U       /*!< Go to sleep */
+#define OVERRUN                     0x0004U       /*!< Overrun */
+#define SUCCESSFULL_TRANSFER        0x0002U       /*!< Successful transfer */
+#define ERROR_IN_RESPONSE           0x0001U       /*!< Error in response */
+
+/* *****************************************************************************
+ * API
+ ******************************************************************************/
+/*!
+ * @addtogroup driver_cluster_group
+ * @{
+ */
+/*!
+ * @brief This function performs the initialization of the LIN core;
+ * is the first call a user must use in the LIN core before using any other API functions.
+ * The implementation of this function can be replaced by user if needed.
+ *
+ * @return Operation status = Zero, which is equivalent to 'Initialization was successful'.
+ */
+BOOL l_sys_init(void);
+
+/*! @} */
+
+
+/*! @} */
+
+/*!
+ * @addtogroup interface_management_group
+ * @{
+ */
+/*!
+ * @brief Initialize the controller specified by name, i.e. sets up internal
+ *  functions such as the baud rate. The default schedule set by the l_ifc_init
+ *  call will be the L_NULL_SCHEDULE where no frames will be sent and received.
+ *  This is the first call a user must perform, before using any other interface
+ *  related LIN API functions.
+ *  The function returns zero if the initialization was successful and non-zero if failed.
+ *
+ * @param[in] iii Interface name
+ * @return Operation status
+ *        - Zero:       Initialization was successful.
+ *        - Non-zero:   Initialization failed.
+ */
+BOOL l_ifc_init(l_ifc_handle iii);
+
+lin_node_state_t l_ifc_get_state(l_ifc_handle iii);
+
+
+/*!
+ * @brief Transmit the wake up signal.
+ *
+ * @param[in] iii Interface name
+ * @return void
+ */
+void l_ifc_wake_up(l_ifc_handle iii);
+
+/*!
+ * @brief This function will return the status of the previous communication.
+ *
+ * @param[in] iii Interface name
+ * @return uint16_t
+ */
+uint16_t l_ifc_read_status(l_ifc_handle iii);
+
+/*! @} */
+
+/*!
+ * @addtogroup call_out_group
+ * @{
+ */
+/*!
+ * @brief Disable LIN related IRQ.
+ *
+ * @param[in] iii Interface name
+ * @return uint16_t
+ */
+uint16_t l_sys_irq_disable(l_ifc_handle iii);
+
+/*!
+ * @brief Enable LIN related IRQ.
+ *
+ * @param[in] iii Interface name
+ * @return void
+ */
+void l_sys_irq_restore(l_ifc_handle iii);
+
+/*! @} */
+
+#endif /* LIN_COMMON_API_H */
+
+/*! @} */
+
+/* ****************************************************************************/
+/* EOF */
+/* ****************************************************************************/
