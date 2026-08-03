@@ -399,6 +399,12 @@ typedef struct {
 	 /* Temporary data buffer. */
 	 VAR(uint8,AUTOMATIC) SduTxBuffer[LINTP_FRAME_MAX_LEN];
 
+	 /**
+	  * @brief SF payload was snapshotted in SduTxBuffer at LinTp_Transmit time.
+	  *        Protects against DCM ResData being cleared to 00 before CopyTxData on SRF.
+	  */
+	 VAR(boolean,AUTOMATIC) bSfPayloadCached;
+
 	 /* Related Rx Sdu  configuration.. */
 	 P2CONST(LinTp_RxNSduType,AUTOMATIC,LINIF_APPL_CONST) LinTpRxNSdu;
 
@@ -3480,6 +3486,7 @@ STATIC FUNC(void,LINIF_CODE) LinTp_ResetChannel
 	chPtr->u8SequenceNum = 0U;
 	chPtr->u8CopyCnt = 0U;
 	chPtr->u8SubChStatus = LINTP_CHANNEL_IDLE;
+	chPtr->bSfPayloadCached = (boolean)FALSE;
 
 	for(u8Loop=0U;u8Loop < LINTP_FRAME_MAX_LEN;u8Loop++)
 	{
@@ -4597,9 +4604,17 @@ STATIC FUNC(void,LINIF_CODE)LinTp_SlaveHandleSrfSF
 	}
 	if(LinTp_SlaveRunCfg[Channel].u8CopyCnt <= LinTp_SlaveRunCfg[Channel].LinTpTxNSdu->LinTpMaxBufReq)
 	{
+		VAR(uint8,AUTOMATIC) copyScratch[LINTP_FRAME_MAX_LEN];
+		VAR(boolean,AUTOMATIC) bUseCache;
+
+		bUseCache = LinTp_SlaveRunCfg[Channel].bSfPayloadCached;
 		for(u8Loop=0U;u8Loop<8U;u8Loop++)
 		{
-			LinTp_SlaveRunCfg[Channel].SduTxBuffer[u8Loop] = 0xFFU;
+			copyScratch[u8Loop] = 0xFFU;
+			if(bUseCache != (boolean)TRUE)
+			{
+				LinTp_SlaveRunCfg[Channel].SduTxBuffer[u8Loop] = 0xFFU;
+			}
 		}
 
 		/**
@@ -4612,7 +4627,16 @@ STATIC FUNC(void,LINIF_CODE)LinTp_SlaveHandleSrfSF
 		 * @req [SWS_LinIf_00705] When calling PduR_LinTpCopyTxData, the LIN Interface shall
 		 *      always set the parameter retry to NULL.
 		 */
-		infoData.SduDataPtr = &(LinTp_SlaveRunCfg[Channel].SduTxBuffer[LINIF_PDU_SF_RSID_OFFSET]);
+		/* If payload was cached at Transmit, CopyTxData into scratch so a zeroed DCM
+		 * ResData cannot overwrite the good snapshot in SduTxBuffer. */
+		if(bUseCache == (boolean)TRUE)
+		{
+			infoData.SduDataPtr = &copyScratch[LINIF_PDU_SF_RSID_OFFSET];
+		}
+		else
+		{
+			infoData.SduDataPtr = &(LinTp_SlaveRunCfg[Channel].SduTxBuffer[LINIF_PDU_SF_RSID_OFFSET]);
+		}
 		infoData.SduLength = LinTp_SlaveRunCfg[Channel].SduRemaining;
 
 		bufResult = Dcm_CopyTxData(
@@ -4630,14 +4654,16 @@ STATIC FUNC(void,LINIF_CODE)LinTp_SlaveHandleSrfSF
 			 *      the response transmission to SRF header.
 			 */
 			LinTp_SlaveRunCfg[Channel].u8CopyCnt = 0U;
+			LinTp_SlaveRunCfg[Channel].bSfPayloadCached = (boolean)FALSE;
 			/**
 			 * Assemble Tp Message.
 			 */
 			LinTp_SlaveRunCfg[Channel].SduTxBuffer[LINIF_PDU_NAD_OFFSET] =  Nad;
 			LinTp_SlaveRunCfg[Channel].SduTxBuffer[LINIF_PDU_PCI_OFFSET] =  (uint8)(LINIF_PCI_SF | (info->SduLength));
 
-			/* Drop bogus SF 74 03 00 00 00 (empty payload after RCRRP). */
-			if((info->SduLength == 3U) &&
+			/* If no cache: drop bogus SF with empty UDS payload. */
+			if((bUseCache != (boolean)TRUE) &&
+			   (info->SduLength == 3U) &&
 			   (LinTp_SlaveRunCfg[Channel].SduTxBuffer[LINIF_PDU_SF_RSID_OFFSET] == 0U) &&
 			   (LinTp_SlaveRunCfg[Channel].SduTxBuffer[LINIF_PDU_SF_RSID_OFFSET + 1U] == 0U) &&
 			   (LinTp_SlaveRunCfg[Channel].SduTxBuffer[LINIF_PDU_SF_RSID_OFFSET + 2U] == 0U))
@@ -5247,6 +5273,27 @@ STATIC FUNC(Std_ReturnType,LINIF_CODE) LinTp_Call_Transmit
 				 * leave the node and the tester may see length-3 garbage / 00 00 00).
 				 */
 				LinTp_SlaveRunCfg[u16ChIndex].eOngoingRequest = LINTP_PHY_REQUEST_TYPE;
+				/**
+				 * Snapshot SF payload now. CopyTxData runs later on SRF; by then DCM
+				 * ResData may already be 00 00 00 (PendBuffer cleared) → ff ff 00 00 00.
+				 */
+				LinTp_SlaveRunCfg[u16ChIndex].bSfPayloadCached = (boolean)FALSE;
+				if((PduInfoPtr->SduDataPtr != NULL_PTR) &&
+				   (PduInfoPtr->SduLength > 0U) &&
+				   (PduInfoPtr->SduLength <= LINIF_SF_MAX_LENGTH))
+				{
+					VAR(uint8,AUTOMATIC) u8Idx;
+					for(u8Idx = 0U; u8Idx < LINTP_FRAME_MAX_LEN; u8Idx++)
+					{
+						LinTp_SlaveRunCfg[u16ChIndex].SduTxBuffer[u8Idx] = 0xFFU;
+					}
+					for(u8Idx = 0U; u8Idx < (uint8)PduInfoPtr->SduLength; u8Idx++)
+					{
+						LinTp_SlaveRunCfg[u16ChIndex].SduTxBuffer[LINIF_PDU_SF_RSID_OFFSET + u8Idx] =
+							PduInfoPtr->SduDataPtr[u8Idx];
+					}
+					LinTp_SlaveRunCfg[u16ChIndex].bSfPayloadCached = (boolean)TRUE;
+				}
 				/**
 				 * Determine the type of frame to be sent for the first time based on
 				 * the length of the data to be transmitted.
