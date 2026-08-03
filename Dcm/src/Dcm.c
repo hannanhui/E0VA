@@ -1297,17 +1297,26 @@ FUNC(BufReq_ReturnType, DCM_CODE)Dcm_CopyTxData
 				{
 #if((STD_ON == DCM_DSL_DIAG_RESP_ON_SECOND_DECLINED_REQUEST) ||\
 	(STD_ON == DCM_DSL_CALLBACK_DCM_REQUEST_SERVICE_ENABLED))
-					if(DCM_RX_STATE_IDLE == Dcm_ConnectionStatus[u8ProConIdx].RxState)
+					if((DCM_RX_STATE_IDLE == Dcm_ConnectionStatus[u8ProConIdx].RxState) &&\
+						(NULL_PTR == Dcm_MsgContext[u8ProRowIdx].ResData))
 					{
 						pResBuffer = &Dcm_NRCBuffer[Dcm_ConnectionStatus[u8ProConIdx].CopyOffset];
 					}
-					else
+					else if(NULL_PTR != Dcm_MsgContext[u8ProRowIdx].ResData)
 					{
 						pResBuffer = &Dcm_MsgContext[u8ProRowIdx].ResData[Dcm_ConnectionStatus[u8ProConIdx].CopyOffset];
+					}
+					else
+					{
+						return BUFREQ_E_NOT_OK;
 					}
 
 					DCM_MEMORY_COPY(pResBuffer, Info->SduDataPtr, Info->SduLength);
 #else
+					if(NULL_PTR == Dcm_MsgContext[u8ProRowIdx].ResData)
+					{
+						return BUFREQ_E_NOT_OK;
+					}
 					DCM_MEMORY_COPY(\
 							&Dcm_MsgContext[u8ProRowIdx].ResData[Dcm_ConnectionStatus[u8ProConIdx].CopyOffset],\
 							Info->SduDataPtr,\

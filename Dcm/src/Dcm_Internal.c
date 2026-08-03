@@ -2396,6 +2396,8 @@ FUNC(void, DCM_CODE)DslInternal_PendingProcess
 			Dcm_ConnectionStatus[Dcm_ActiveConIdx].NRC = DCM_E_GENERALREJECT;
 
 			Dcm_MsgContext[Dcm_ActiveProRowIdx].ResData = pProtocolRow->DcmDslProtocolTxBufferRef->DcmDslBufferRef;
+			/* 78 left ResDataLen==3 on PendBuffer; must not reuse that length on the TX buffer. */
+			Dcm_MsgContext[Dcm_ActiveProRowIdx].ResDataLen = 0u;
 
 			result = Dcm_ConnectionStatus[Dcm_ActiveConIdx].ServiceFnc(\
 							Dcm_OpState,\
@@ -2452,6 +2454,7 @@ FUNC(BufReq_ReturnType, DCM_CODE)DslInternal_SetNRCAndTransmit
 		info.SduDataPtr = Dcm_NRCBuffer;
 		info.SduLength = 3u;
 
+		info.SduDataPtr[0] = (uint8)0x7Fu;
 		info.SduDataPtr[1] = u8Sid;
 		info.SduDataPtr[2] = NRC;
 
@@ -2805,6 +2808,15 @@ FUNC(void, DCM_CODE)DslInternal_TransmitHandle
 	info.SduDataPtr = Dcm_MsgContext[u8ProRowIdx].ResData;
 	info.SduLength = Dcm_MsgContext[u8ProRowIdx].ResDataLen;
 
+	/* Guard: never push a length-3 all-zero payload (seen as 74 03 00 00 00 after RCRRP). */
+	if((NULL_PTR == info.SduDataPtr) || (0u == info.SduLength) ||
+	   ((3u == info.SduLength) &&
+	    (0u == info.SduDataPtr[0]) && (0u == info.SduDataPtr[1]) && (0u == info.SduDataPtr[2])))
+	{
+		DslInternal_ResetConnectionStatus();
+		return;
+	}
+
 	/**
 	 * @req [SWS_Dcm_00115] When the diagnostic response of a DcmDslMainConnection is ready, the DSL
 	 * 		submodule shall trigger the transmission of the diagnostic response to the PduR module by
@@ -2820,7 +2832,11 @@ FUNC(void, DCM_CODE)DslInternal_TransmitHandle
 		{
 			Dcm_P2TimerStatus.TimerEnable = (boolean)FALSE;
 #if(STD_ON == DCM_DSP_SESSION_TIM_P2_PENDING_WINDOW)
-			Dcm_P2StarTimerStatus.PendingProcessState = (boolean)FALSE;
+			/* Only clear pending-process when this TX is the FINAL response, not RCRRP 0x78. */
+			if((3u != info.SduLength) || ((uint8)0x78u != info.SduDataPtr[2]))
+			{
+				Dcm_P2StarTimerStatus.PendingProcessState = (boolean)FALSE;
+			}
 #endif /* #if(STD_ON == DCM_DSP_SESSION_TIM_P2_PENDING_WINDOW) */
 		}
 
@@ -2828,7 +2844,10 @@ FUNC(void, DCM_CODE)DslInternal_TransmitHandle
 		if((boolean)TRUE == Dcm_P2StarTimerStatus.TimerEnable)
 		{
 			Dcm_P2StarTimerStatus.TimerEnable = (boolean)FALSE;
-			Dcm_P2StarTimerStatus.PendingProcessState = (boolean)FALSE;
+			if((3u != info.SduLength) || ((uint8)0x78u != info.SduDataPtr[2]))
+			{
+				Dcm_P2StarTimerStatus.PendingProcessState = (boolean)FALSE;
+			}
 		}
 #endif /* #if(0u != DCM_DSL_DIAG_RESP_MAX_NUM_RESP_PEND) */
 

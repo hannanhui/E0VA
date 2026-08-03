@@ -4636,6 +4636,18 @@ STATIC FUNC(void,LINIF_CODE)LinTp_SlaveHandleSrfSF
 			LinTp_SlaveRunCfg[Channel].SduTxBuffer[LINIF_PDU_NAD_OFFSET] =  Nad;
 			LinTp_SlaveRunCfg[Channel].SduTxBuffer[LINIF_PDU_PCI_OFFSET] =  (uint8)(LINIF_PCI_SF | (info->SduLength));
 
+			/* Drop bogus SF 74 03 00 00 00 (empty payload after RCRRP). */
+			if((info->SduLength == 3U) &&
+			   (LinTp_SlaveRunCfg[Channel].SduTxBuffer[LINIF_PDU_SF_RSID_OFFSET] == 0U) &&
+			   (LinTp_SlaveRunCfg[Channel].SduTxBuffer[LINIF_PDU_SF_RSID_OFFSET + 1U] == 0U) &&
+			   (LinTp_SlaveRunCfg[Channel].SduTxBuffer[LINIF_PDU_SF_RSID_OFFSET + 2U] == 0U))
+			{
+				LinTp_ResetChannel(&LinTp_SlaveRunCfg[Channel]);
+				Dcm_TpTxConfirmation(pduId, E_NOT_OK);
+				Lin_SduPtr->Drc = LIN_FRAMERESPONSE_IGNORE;
+				return;
+			}
+
 			if(LinTp_SlaveRunCfg[Channel].eOngoingRequest == LINTP_FUN_REQUEST_TYPE)
 			{
 				/**
