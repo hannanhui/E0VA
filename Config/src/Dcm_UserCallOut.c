@@ -1020,20 +1020,42 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspStartRoutine_0xFF01_checkProgrammingDependen
     P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
 )
 {
-    Std_ReturnType result = (Std_ReturnType)E_OK;
+    Std_ReturnType flashResult;
+    (void)DataIn;
     (void)DataInVar;
-    (void)OpStatus;
     (void)DataOutVar;
     (void)CurrentLengthDataInVar;
-    result = CheckProgrammingDependncies();
-    *CurrentLengthDataOutVar = 1;
-    uint8 RealLeng = 0;
-    EE_ReadRecord(&eeConf,EE_DependecyCheckSeccessCounter,4,&DependecyCheckSeccessCounter,&RealLeng,NULL_PTR);
-    DependecyCheckSeccessCounter++;
-    EE_WriteRecord(&eeConf,EE_DependecyCheckSeccessCounter,4,&DependecyCheckSeccessCounter,0,NULL_PTR);
 
-    *DataOut = result;
-    return result;
+    if(OpStatus == DCM_CANCEL)
+    {
+        FF01_Pending = FALSE;
+        return (Std_ReturnType)E_NOT_OK;
+    }
+
+    /* First entry: force 78 so flash/EE are not done under P2. */
+    if(FF01_Pending == FALSE)
+    {
+        FF01_Pending = TRUE;
+        *ErrorCode = DCM_E_RESPONSE_PENDING;
+        return DCM_E_FORCE_RCRRP;
+    }
+
+    /* After 78 confirmed (FORCE_RCRRP_OK / PENDING): do dependency check, then positive. */
+    flashResult = CheckProgrammingDependncies();
+    {
+        uint8 RealLeng = 0;
+        EE_ReadRecord(&eeConf,EE_DependecyCheckSeccessCounter,4,&DependecyCheckSeccessCounter,&RealLeng,NULL_PTR);
+        DependecyCheckSeccessCounter++;
+        EE_WriteRecord(&eeConf,EE_DependecyCheckSeccessCounter,4,&DependecyCheckSeccessCounter,0,NULL_PTR);
+    }
+
+    *CurrentLengthDataOutVar = 1u;
+    /* Routine status in DataOut; always E_OK so DCM builds 71 01 FF 01 xx (not NRC len-3). */
+    *DataOut = ((flashResult == (Std_ReturnType)E_OK) ? (uint8)0x00u : (uint8)0x01u);
+    FF01_Pending = FALSE;
+    (void)OpStatus;
+    (void)ErrorCode;
+    return (Std_ReturnType)E_OK;
 }
 
 FUNC(Std_ReturnType, DCM_CODE)DcmDspStartRoutine_0xDD01_StayInBoot
@@ -1065,6 +1087,7 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspStartRoutine_0xDD01_StayInBoot
 }
 
 boolean DD02_Pending = FALSE;
+boolean FF01_Pending = FALSE;
 FUNC(Std_ReturnType, DCM_CODE)DcmDspStartRoutine_0xDD02_SecuritySignatureVerification
 (
     P2VAR(uint8, AUTOMATIC, DCM_VAR)DataIn,

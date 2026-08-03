@@ -4588,6 +4588,13 @@ STATIC FUNC(void,LINIF_CODE)LinTp_SlaveHandleSrfSF
 	 *      reception of a SRF header until the transmit data is provided. For the number of
 	 *      retries, refer to the configuration parameter LinTpMaxBufReq.
 	 */
+	if((LinTp_SlaveRunCfg[Channel].SduRemaining == 0U) ||
+	   (LinTp_SlaveRunCfg[Channel].SduRemaining > LINIF_SF_MAX_LENGTH))
+	{
+		/* SduRemaining==0 previously built PCI 0x00 → 00 FF FF FF...; ignore instead. */
+		Lin_SduPtr->Drc = LIN_FRAMERESPONSE_IGNORE;
+		return;
+	}
 	if(LinTp_SlaveRunCfg[Channel].u8CopyCnt <= LinTp_SlaveRunCfg[Channel].LinTpTxNSdu->LinTpMaxBufReq)
 	{
 		for(u8Loop=0U;u8Loop<8U;u8Loop++)

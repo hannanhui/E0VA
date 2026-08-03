@@ -1094,9 +1094,8 @@ status_t LIN_LPUART_DRV_GotoIdleState(uint32_t instance)
     /* Enable LIN break detect interrupt */
 	(void)LPUART_ClearStatusFlag(LPUART_LIN_BREAK_DETECT);
 
-    /* Must flush here: IGNORE leaves response bytes already in FIFO.
-     * IDLE RBFI alone is too late — next Break would treat leftovers as SYNC. */
-    UART_EmptyRxFifo(LIN_ID);
+    /* EmptyRxFifo commented out (all 3 sites): vehicle 10 02 works without them.
+     * UART_EmptyRxFifo(LIN_ID); */
 
     /* Change node's current state to IDLE */
     linCurrentState->currentNodeState = LIN_NODE_STATE_IDLE;
@@ -1221,9 +1220,8 @@ static void LIN_LPUART_DRV_ProcessBreakDetect(uint32_t instance)
 		/* Disable LIN Break Detect Interrupt */
 		//LPUART_SetIntMode(LPUART_LIN_BREAK_DETECT, false);
 
-        /* ONLY place to leave EmptyRxFifo commented out among the three:
-         * after Break, SYNC 0x55 may already be in FIFO — flushing drops it (FF01).
-         * IGNORE leftovers are cleared in GotoIdle (+ IDLE RBFI backup). */
+        /* EmptyRxFifo commented out (all 3 sites): vehicle 10 02 works without them.
+         * UART_EmptyRxFifo(LIN_ID); */
 
 		/* Set flag LIN bus busy */
 		linCurrentState->isBusBusy = true;

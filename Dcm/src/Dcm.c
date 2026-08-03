@@ -1421,7 +1421,14 @@ FUNC(void, DCM_CODE)Dcm_TpTxConfirmation
 				if((boolean)TRUE == result)
 #endif /* #if(0u != DCM_DSL_DIAG_RESP_MAX_NUM_RESP_PEND) */
 				{
-					DCM_BUFFER_CLEAR(Dcm_MsgContext[u8ProRowIdx].ResData, Dcm_MsgContext[u8ProRowIdx].ResDataLen);
+					/* Do not wipe the static RCRRP template (PendBuffer). Clearing it yields
+					 * a later SF 74 03 00 00 00 when length-3 is transmitted again. */
+					if((NULL_PTR != Dcm_MsgContext[u8ProRowIdx].ResData) &&\
+						(3u != Dcm_MsgContext[u8ProRowIdx].ResDataLen ||\
+						 (uint8)0x78u != Dcm_MsgContext[u8ProRowIdx].ResData[2]))
+					{
+						DCM_BUFFER_CLEAR(Dcm_MsgContext[u8ProRowIdx].ResData, Dcm_MsgContext[u8ProRowIdx].ResDataLen);
+					}
 
 					DslInternal_ResetConnectionStatus();
 				}

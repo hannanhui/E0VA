@@ -589,9 +589,8 @@ void LIN_LPUART_Total_IRQHandler(uint32_t instance)
 				}
 				else
 				{
-					/* IDLE/SLEEP: drain bytes that arrive after GotoIdle flush.
-					 * Only BreakDetect must NOT EmptyRxFifo (SYNC may already be queued). */
-					UART_EmptyRxFifo(LIN_ID);
+					/* EmptyRxFifo commented out (all 3 sites): vehicle 10 02 works without them.
+					 * UART_EmptyRxFifo(LIN_ID); */
 				}
         break;
         

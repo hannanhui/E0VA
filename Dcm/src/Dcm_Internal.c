@@ -582,10 +582,12 @@ STATIC FUNC(boolean, DCM_CODE)DsdInternal_ResponseNRCHandle
 						}
 						else
 						{
+							/* Always rebuild full RCRRP; BUFFER_CLEAR must not leave PendBuffer as 00 00 00. */
+							Dcm_PendBuffer[0] = (uint8)0x7Fu;
+							Dcm_PendBuffer[1] = Dcm_MsgContext[u8ProRowIdx].ReqData[0];
+							Dcm_PendBuffer[2] = (uint8)0x78u;
 							Dcm_MsgContext[u8ProRowIdx].ResData = Dcm_PendBuffer;
 							Dcm_MsgContext[u8ProRowIdx].ResDataLen = 3u;
-
-							Dcm_PendBuffer[1] = Dcm_MsgContext[u8ProRowIdx].ReqData[0];
 						}
 					}
 					else
@@ -2988,6 +2990,10 @@ FUNC(boolean, DCM_CODE)DsdInternal_TpTxConfirmation
 			Dcm_P2StarTimerStatus.TimerEnable = (boolean)TRUE;
 			Dcm_P2StarTimerStatus.PendingNRCSendState = (boolean)FALSE;
 			Dcm_P2StarTimerStatus.PendingProcessState = (boolean)TRUE;
+			/* Ready for the final response after RCRRP; leave COPY/CONFIRM stuck. */
+			Dcm_ConnectionStatus[Dcm_ActiveConIdx].TxState = DCM_TX_STATE_IDLE;
+			Dcm_ConnectionStatus[Dcm_ActiveConIdx].RemainLen = (PduLengthType)0;
+			Dcm_ConnectionStatus[Dcm_ActiveConIdx].CopyOffset = (PduLengthType)0;
 			result = (boolean)FALSE;
 			break;
 		case DCM_CANCEL:
