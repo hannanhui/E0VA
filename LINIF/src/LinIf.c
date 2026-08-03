@@ -4648,22 +4648,10 @@ STATIC FUNC(void,LINIF_CODE)LinTp_SlaveHandleSrfSF
 				return;
 			}
 
-			if(LinTp_SlaveRunCfg[Channel].eOngoingRequest == LINTP_FUN_REQUEST_TYPE)
-			{
-				/**
-				 * @req [SWS_LinIf_00414] The LIN Interface shall set the sub-state of a
-				 *      channel to LINTP_CHANNEL_IDLE when it has successfully terminated the
-				 *      transmission or reception of a LIN TP message
-				 * @req [SWS_LinIf_00688] The LIN Interface shall set the sub-state of a
-				 *      channel to LINTP_CHANNEL_IDLE when it has detected an unrecoverable
-				 *      error on this channel.
-				 */
-				LinTp_ResetChannel(&LinTp_SlaveRunCfg[Channel]);
-		        Dcm_TpTxConfirmation(pduId, E_OK);
-		        Lin_SduPtr->Drc = LIN_FRAMERESPONSE_IGNORE;
-		        
-			}
-			else
+			/*
+			 * Functional-request suppress (IGNORE + immediate TxConfirmation) must NOT
+			 * apply to DCM-triggered responses. Always put the SF on the SRF.
+			 */
 			{
 				for(u8Loop=0U;u8Loop<8U;u8Loop++)
 				{
@@ -5252,6 +5240,13 @@ STATIC FUNC(Std_ReturnType,LINIF_CODE) LinTp_Call_Transmit
 				LinTp_SlaveRunCfg[u16ChIndex].LinTpTxNSdu = &(LinTp_ConfigPtr->LinTpTxNSdu[Channel]);
 				LinTp_SlaveRunCfg[u16ChIndex].LinTpChannel = pChannel;
 				LinTp_SlaveRunCfg[u16ChIndex].SduRemaining = PduInfoPtr->SduLength;
+				/**
+				 * DCM called LinTp_Transmit — this response must go out on SRF.
+				 * Do not keep a stale LINTP_FUN_REQUEST_TYPE from a prior 0x7E frame
+				 * (that path does IGNORE + fake TxConfirmation, so 78/positive never
+				 * leave the node and the tester may see length-3 garbage / 00 00 00).
+				 */
+				LinTp_SlaveRunCfg[u16ChIndex].eOngoingRequest = LINTP_PHY_REQUEST_TYPE;
 				/**
 				 * Determine the type of frame to be sent for the first time based on
 				 * the length of the data to be transmitted.
