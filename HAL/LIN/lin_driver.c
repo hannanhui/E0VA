@@ -589,7 +589,11 @@ void LIN_LPUART_Total_IRQHandler(uint32_t instance)
 				}
 				else
 				{
-					/* IDLE/SLEEP: drain unexpected RX to avoid FIFO overrun on busy vehicle schedule */
+					/* IDLE/SLEEP: drain leftover bytes from IGNORE frames.
+					 * Without this, junk survives until next header and 10 02 / 50 02 fail.
+					 * Safe here: we are not expecting SYNC yet (BreakDetect sets RECV_SYNC
+					 * first). Do NOT EmptyRxFifo in BreakDetect/GotoIdle — that can drop
+					 * a SYNC already queued after long IRQ-off (FF01). */
 					UART_EmptyRxFifo(LIN_ID);
 				}
         break;

@@ -1094,8 +1094,8 @@ status_t LIN_LPUART_DRV_GotoIdleState(uint32_t instance)
     /* Enable LIN break detect interrupt */
 	(void)LPUART_ClearStatusFlag(LPUART_LIN_BREAK_DETECT);
 
-    /* Discard leftover RX bytes so ignored application frames cannot overflow FIFO. */
-    UART_EmptyRxFifo(LIN_ID);
+    /* Do NOT EmptyRxFifo here: unconditional flush can drop next SYNC/PID
+     * (e.g. after long FF01 flash). Dirty data is cleared only on OVERRUN. */
 
     /* Change node's current state to IDLE */
     linCurrentState->currentNodeState = LIN_NODE_STATE_IDLE;
@@ -1220,8 +1220,8 @@ static void LIN_LPUART_DRV_ProcessBreakDetect(uint32_t instance)
 		/* Disable LIN Break Detect Interrupt */
 		//LPUART_SetIntMode(LPUART_LIN_BREAK_DETECT, false);
 
-        /* Drop stale bytes from ignored frames before expecting SYNC 0x55. */
-        UART_EmptyRxFifo(LIN_ID);
+        /* Do NOT EmptyRxFifo on every break: SYNC 0x55 may already be in FIFO.
+         * Flush only on OVERRUN / confirmed dirty data. */
 
 		/* Set flag LIN bus busy */
 		linCurrentState->isBusBusy = true;
