@@ -89,7 +89,19 @@ volatile uint32 time=0;
 int main()
 {
 	System_Init();
-	FLASH_Init();	
+	FLASH_Init();
+
+	/* Belt-and-suspenders: ensure FLS-driver RAM has valid ECC before any
+	 * UDS 0x36 write/CRC. Startup also clears 0x20007B00..0x20007F03. */
+	{
+		volatile uint32 *p = (volatile uint32 *)0x20007B00u;
+		uint32 i;
+		for (i = 0u; i < (0x400u / 4u); i++)
+		{
+			p[i] = 0u;
+		}
+		g_boot_flag = 0u;
+	}
 
 	EE_Init(&eeConf, ENABLE, &CallBack);
 

@@ -287,6 +287,20 @@ LC1
                 SUBS R2, #4
                 BGE LC1
 LC2
+                ; Init ECC for Flash_Driver RAM (0x20007B00, 1KB) and Boot_Flag
+                ; (0x20007F00). These lie outside RAM_START..STACK and are NOT
+                ; loaded from Flash on cold boot. Keil download initializes them
+                ; via debugger; after power-cycle an access (incl. 0x36 copy of
+                ; FLS driver or RMW) can raise SRAM multi-bit ECC / NMI.
+                LDR     R1, =0x20007B00
+                LDR     R2, =0x00000404
+                MOVS    R0, #0
+                MOVS    R3, #4
+LC3
+                STR     R0, [R1]
+                ADD     R1, R1, R3
+                SUBS    R2, #4
+                BGT     LC3
                 NOP
                 ENDIF
 
