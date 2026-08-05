@@ -224,57 +224,11 @@ static ResultStatus_t FLASH_WaitEraseAllComplete(flash_cb_t callBack)
 }
 
 
-__attribute__((section(".Flash_Driver"),used)) uint8_t  FLASH_CmdLaunchAndWaitInRam()
-{
-	/*uint8_t ret=1;
-	volatile uint32_t localCnt = 0U;
-	    flash_reg_t *pFlashReg = (flash_reg_t *) FLASHC_BASE_ADDR;
-
-	      uint8_t ccifFlag=0;
-	       ASMV_KEYWORD(
-        "PUSH  {R0, R1, R2}\n"
-        "LDR   R0, =0x40020000\n"
-        "LDR   R1, =0x80\n"
-
-        "NOP\n"
-        "NOP\n"
-        "NOP\n"
-        "NOP\n"
-        "NOP\n"
-        "NOP\n"
-        "NOP\n"
-        "NOP\n"
-
-        "STR   R1, [R0]\n"
-        "LDR   R2, [R0]\n"
-
-        "NOP\n"
-        "NOP\n"
-        "NOP\n"
-        "NOP\n"
-        "NOP\n"
-        "NOP\n"
-        "NOP\n"
-        "NOP\n"
-        "POP  {R0, R1, R2}\n"
-				::: "memory"
-            );
-				while(localCnt<30000000U)
-				{
-					  ccifFlag = pFlashReg->FLASH_FSTAT.CCIF;
-						if(0U != ccifFlag)
-						{
-								ret = 0;
-								break;
-						}
-						else
-						{
-								localCnt++;
-
-						} 
-					}
-				return ret;*/
-}
+/* FLASH_CmdLaunchAndWaitInRam was previously placed in .Flash_Driver at
+ * 0x20007B00 via section attribute. That overlapped the UDS-downloaded FLS
+ * driver RAM and forced Keil to program a few Boot bytes into RAM (lost on
+ * power-cycle). APP erase/program now goes through BLFlash_InfoPtr function
+ * pointers into the downloaded driver; Boot PFlash cmds use inline launch. */
 
 static ResultStatus_t FLASH_ExecuteCommand(FLASH_Cmd_t cmd, flash_cb_t callBack)
 {
@@ -348,8 +302,8 @@ static ResultStatus_t FLASH_ExecuteCommand(FLASH_Cmd_t cmd, flash_cb_t callBack)
             /* Do nothing */
         }
 
-        /* clear CCIF to start cmd */
- /*       ASMV_KEYWORD(
+        /* clear CCIF to start cmd (FLASH.2 workaround NOPs) */
+        ASMV_KEYWORD(
         "PUSH  {R0, R1, R2}\n"
         "LDR   R0, =0x40020000\n"
         "LDR   R1, =0x80\n"
@@ -376,27 +330,24 @@ static ResultStatus_t FLASH_ExecuteCommand(FLASH_Cmd_t cmd, flash_cb_t callBack)
         "NOP\n"
         "POP  {R0, R1, R2}\n"
             );
-        */
-				stat=FLASH_CmdLaunchAndWaitInRam();
+
         scmRegPtr->SCM_MISCCTL1.CACHE_DIS = (uint32_t)oldCacheStat;
 
-				if (0U == regOldPriMask) 
+        if (0U == regOldPriMask)
         {
             COMMON_ENABLE_INTERRUPTS();
         }
 
- /*       if(FLASH_CMD_ERSALL == cmd)
+        if(FLASH_CMD_ERSALL == cmd)
         {
             stat = FLASH_WaitEraseAllComplete(callBack);
         }
         else
         {
             stat = FLASH_WaitCmdComplete(callBack);
-        }*/
+        }
 
-				
-
-				scmRegPtr->SCM_MISCCTL1.CACHE_DIS = (uint32_t)oldCacheStat;
+        scmRegPtr->SCM_MISCCTL1.CACHE_DIS = (uint32_t)oldCacheStat;
         fstatVal = pFlashRegW->FLASH_FSTAT;
         if((fstatVal & FLASH_CMD_ERR_MASK) != 0U)
         {

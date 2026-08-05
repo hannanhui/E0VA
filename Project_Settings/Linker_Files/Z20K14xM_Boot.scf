@@ -47,7 +47,10 @@ LR_IROM1 pflash_start pflash_size  {    ; load region size_region
 
 }
 
-RESERVED_FLASH_DRIVER 0x20007B00 0x400 {
-  ER_FLS_RAM 0x20007B00  {*(.Flash_Driver)}
-} 
+; Reserved for UDS-downloaded FLS driver only. Do NOT place Boot objects here
+; (previously .Flash_Driver was linked here and Keil programmed those bytes to
+; RAM; cold boot does not reload them). Call via BLFlash_InfoPtr after 0x36.
+FLASH_DRIVER_RAM 0x20007B00 EMPTY 0x400
+{
+}
 

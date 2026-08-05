@@ -240,8 +240,6 @@ tFlashParam FBL_FlashProgramInfo =                  //�ص� ����ṹ�
 /* information which shall be programmed to EEPROM */
 VAR(FBL_AppProgramInfoType, AUTOMATIC) FBL_AppProgramInfo;   //����ṹ������������app����Ϣ��������fls��appǰ��  �����Ǹ�appinfo
 
-//const tFlash_InfoType* BLFlash_InfoPtr;
-
 boolean DidCanWritr = FALSE;
 
 boolean ErrorApp = FALSE;
@@ -443,10 +441,15 @@ STATIC FUNC(Std_ReturnType,AUTOMATIC) FBL_ErrorInit(void)
  */
 STATIC FUNC(void,AUTOMATIC) FBL_InitFlash(void)
 {
-//	BLFlash_InfoPtr = (const tFlash_InfoType *)FLASH_DRIVE_ADDRESS;
+	/* Downloaded image at FLASH_DRIVE_ADDRESS starts with tFlash_InfoType
+	 * (function pointer table). Jump via pointers — do not link Boot code
+	 * into 0x20007B00. */
+	BLFlash_InfoPtr = (const tFlash_InfoType *)FLASH_DRIVE_ADDRESS;
 
-	/* Flash initialization */
-//	BLFlash_InfoPtr->flashInitFct(&FBL_FlashProgramInfo);
+	if ((BLFlash_InfoPtr != NULL_PTR) && (BLFlash_InfoPtr->flashInitFct != NULL_PTR))
+	{
+		BLFlash_InfoPtr->flashInitFct(&FBL_FlashProgramInfo);
+	}
 
 	DidCanWritr = TRUE;
 }
@@ -986,23 +989,28 @@ STATIC FUNC(Std_ReturnType,AUTOMATIC) FBL_FlashDriveCheck(void)   //�ж�fls�
  * @param[out]     None
  * @return         None
  */
-const tFlash_InfoType* BLFlash_InfoPtr;
+const tFlash_InfoType* BLFlash_InfoPtr = NULL_PTR;
 STATIC FUNC(Std_ReturnType,AUTOMATIC) FBL_EraseAppData(void)
 {
-	uint8 ret = FALSE;
-uint32 Index = 0U;
+	VAR(Std_ReturnType,AUTOMATIC) ret = (Std_ReturnType)FBL_NOT_OK;
 
-	/* Flash erase app information */
-	Index = (FBL_ProgramBlInfo[FBL_CurrentBlIndex].DataBlLength % FBL_EEPROM_INFO_LENGTH);
-	if(Index != 0)
+	if ((BLFlash_InfoPtr == NULL_PTR) || (BLFlash_InfoPtr->flashEraseFct == NULL_PTR))
 	{
-		Index = (FBL_ProgramBlInfo[FBL_CurrentBlIndex].DataBlLength / FBL_EEPROM_INFO_LENGTH) + 1;
+		return ret;
 	}
-	else
+
+	FBL_FlashProgramInfo.address = (tFlashAddress)FBL_ProgramBlInfo[FBL_CurrentBlIndex].DataBlddress;
+	FBL_FlashProgramInfo.length = (tFlashLength)FBL_ProgramBlInfo[FBL_CurrentBlIndex].DataBlLength;
+	FBL_FlashProgramInfo.data = NULL_PTR;
+	FBL_FlashProgramInfo.errorCode = (tFlashResult)kFlashFailed;
+
+	BLFlash_InfoPtr->flashEraseFct(&FBL_FlashProgramInfo);
+
+	if (FBL_FlashProgramInfo.errorCode == (tFlashResult)kFlashOk)
 	{
-		Index = (FBL_ProgramBlInfo[FBL_CurrentBlIndex].DataBlLength / FBL_EEPROM_INFO_LENGTH);
+		ret = (Std_ReturnType)FBL_OK;
 	}
-	ret = Flash_EraseNSectors(FBL_ProgramBlInfo[FBL_CurrentBlIndex].DataBlddress , Index);
+
 	return ret;
 }
 
@@ -1014,8 +1022,21 @@ uint32 Index = 0U;
  */
 STATIC FUNC(Std_ReturnType,AUTOMATIC) FBL_WriteAppData(void)
 {
-		uint8 ret = FALSE;
-	ret = Flash_Write(FBL_FlashProgramInfo.address, FBL_FlashProgramInfo.length, FBL_FlashProgramInfo.data);
+	VAR(Std_ReturnType,AUTOMATIC) ret = (Std_ReturnType)FBL_NOT_OK;
+
+	if ((BLFlash_InfoPtr == NULL_PTR) || (BLFlash_InfoPtr->flashWriteFct == NULL_PTR))
+	{
+		return ret;
+	}
+
+	FBL_FlashProgramInfo.errorCode = (tFlashResult)kFlashFailed;
+	BLFlash_InfoPtr->flashWriteFct(&FBL_FlashProgramInfo);
+
+	if (FBL_FlashProgramInfo.errorCode == (tFlashResult)kFlashOk)
+	{
+		ret = (Std_ReturnType)FBL_OK;
+	}
+
 	return ret;
 }
 
@@ -1220,7 +1241,19 @@ FUNC(void,AUTOMATIC) FBL_FlashErase(void)
 
 			FBL_FlashProgramInfo.errorCode = 0x00U;
 
-			FBL_EraseAppData();
+			ret = FBL_EraseAppData();
+			if (ret == (Std_ReturnType)FBL_OK)
+			{
+				FBL_ErrorStatus = (Std_ReturnType)FBL_OK;
+				FBL_ErasingSuccess = (boolean)TRUE;
+				FBL_FlashOperationState = FBL_IDIE_STATE;
+			}
+			else
+			{
+				FBL_ErrorStatus = FBL_ERR_FLASHDRIVER;
+				FBL_ErrorMark = (boolean)TRUE;
+				FBL_ErasingSuccess = (boolean)FALSE;
+			}
 
 			/* todo:(0x00U == FBL_FlashProgramInfo.errorCode) */
             // while(u32Length > 0U)
@@ -1329,15 +1362,21 @@ FUNC(Std_ReturnType,AUTOMATIC) FBL_WriteFlashAppInfo(void)
 			/* Erase the information before */
 				// ret = FBL_EraseAppData();
 
-				FBL_FlashProgramInfo.length = (FBL_LengthType)sizeof(FBL_AppProgramInfo);
-
 				FBL_FlashProgramInfo.address = (FBL_AddressType)FBL_EEPROM_INFO_ADDRESS;
-			
 				FBL_FlashProgramInfo.data = (uint8 *)&FBL_AppProgramInfo;
-				/* Write new information */
-				ret = Flash_EraseNSectors(FBL_FlashProgramInfo.address , 1);
-				ret = FBL_WriteAppData();
-				
+
+				/* Erase + program Info via downloaded FLS driver function pointers */
+				if ((BLFlash_InfoPtr != NULL_PTR) && (BLFlash_InfoPtr->flashEraseFct != NULL_PTR))
+				{
+					FBL_FlashProgramInfo.length = (tFlashLength)FBL_EEPROM_INFO_LENGTH;
+					FBL_FlashProgramInfo.errorCode = (tFlashResult)kFlashFailed;
+					BLFlash_InfoPtr->flashEraseFct(&FBL_FlashProgramInfo);
+					if (FBL_FlashProgramInfo.errorCode == (tFlashResult)kFlashOk)
+					{
+						FBL_FlashProgramInfo.length = (FBL_LengthType)sizeof(FBL_AppProgramInfo);
+						ret = FBL_WriteAppData();
+					}
+				}
 
 	}
 	return ret;
