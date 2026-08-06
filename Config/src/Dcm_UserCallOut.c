@@ -323,7 +323,12 @@ FUNC(Dcm_ReturnReadMemoryType, DCM_CODE)Dcm_ReadMemory
  * @req [SWS_Dcm_00540]
  */
 
-//  boolean Dcm_Write_Pending = FALSE;
+/* FBL_OK==0 maps to DCM_WRITE_OK, but FBL_NOT_OK==1 collides with
+ * DCM_WRITE_PENDING — never return raw FBL codes from this callout.
+ * Also never return DCM_E_PENDING (0x0A): 0x36 only treats
+ * DCM_WRITE_PENDING / DCM_WRITE_FORCE_RCRRP as pending. */
+STATIC VAR(boolean, DCM_VAR) Dcm_Write36_Pending = FALSE;
+
 FUNC(Dcm_ReturnWriteMemoryType, DCM_CODE)Dcm_WriteMemory
 (
 	Dcm_OpStatusType OpStatus,
@@ -335,19 +340,37 @@ FUNC(Dcm_ReturnWriteMemoryType, DCM_CODE)Dcm_WriteMemory
 )
 {
 	Dcm_ReturnWriteMemoryType result = DCM_WRITE_FAILED;
-    result = FBL_Dcm0x36Call(MemoryAddress,MemoryData,MemorySize);
-    if(result == E_NOT_OK)
-    {
-        *ErrorCode = DCM_E_REQUESTOUTOFRANGE;
-    }
+	Std_ReturnType fblRet;
 
-    // if(Dcm_Write_Pending == FALSE)
-    // {
-    //     *ErrorCode = DCM_E_RESPONSE_PENDING;
-    //     Dcm_Write_Pending = TRUE;
-    //     return DCM_E_PENDING;
-    // }
-    // Dcm_Write_Pending = FALSE;
+	(void)MemoryIdentifier;
+
+	if (OpStatus == DCM_CANCEL)
+	{
+		Dcm_Write36_Pending = FALSE;
+		return DCM_WRITE_OK;
+	}
+
+	/* First call: force immediate NRC 0x78 so LinTp/DCM can TX before the
+	 * blocking FBL/LZSS/flash work. Must be DCM_WRITE_* not DCM_E_PENDING. */
+	if ((OpStatus == DCM_INITIAL) && (Dcm_Write36_Pending == FALSE))
+	{
+		Dcm_Write36_Pending = TRUE;
+		*ErrorCode = DCM_E_RESPONSE_PENDING;
+		return DCM_WRITE_FORCE_RCRRP;
+	}
+
+	fblRet = FBL_Dcm0x36Call(MemoryAddress, MemoryData, MemorySize);
+	Dcm_Write36_Pending = FALSE;
+
+	if (fblRet == (Std_ReturnType)FBL_OK)
+	{
+		result = DCM_WRITE_OK;
+	}
+	else
+	{
+		result = DCM_WRITE_FAILED;
+		*ErrorCode = DCM_E_REQUESTOUTOFRANGE;
+	}
 
 	return result;
 }

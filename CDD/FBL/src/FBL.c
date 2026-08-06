@@ -1100,7 +1100,35 @@ STATIC FUNC(void,AUTOMATIC) FBL_FlashDown(    //Fls��������
 		CONST(FBL_LengthType,AUTOMATIC)Length,
 		P2CONST(uint8,AUTOMATIC,AUTOMATIC)SourceBuff)
 {
-	FBL_MemoryManag((uint8*)StartAdd, SourceBuff, Length , (boolean)TRUE);
+	/* Prefer aligned 32-bit stores into FLS-driver RAM so SRAM ECC stays
+	 * valid (byte RMW is OK only after ECC init, but word stores are safer). */
+	if ((((uint32)StartAdd & 3u) == 0u) && (Length >= 4u))
+	{
+		volatile uint32 *dest = (volatile uint32 *)StartAdd;
+		FBL_LengthType words = Length / 4u;
+		FBL_LengthType rem = Length & 3u;
+		FBL_LengthType i;
+		FBL_LengthType byteOff = 0u;
+
+		for (i = 0u; i < words; i++)
+		{
+			uint32 w = ((uint32)SourceBuff[byteOff])
+				| ((uint32)SourceBuff[byteOff + 1u] << 8)
+				| ((uint32)SourceBuff[byteOff + 2u] << 16)
+				| ((uint32)SourceBuff[byteOff + 3u] << 24);
+			dest[i] = w;
+			byteOff += 4u;
+		}
+		if (rem != 0u)
+		{
+			FBL_MemoryManag((uint8 *)(StartAdd + (words * 4u)),
+					&SourceBuff[byteOff], rem, (boolean)TRUE);
+		}
+	}
+	else
+	{
+		FBL_MemoryManag((uint8*)StartAdd, SourceBuff, Length , (boolean)TRUE);
+	}
 }
 
 
@@ -1585,6 +1613,11 @@ FUNC(Std_ReturnType,AUTOMATIC) FBL_Dcm0x36Call
 				if(FBL_FlashDrive == FBL_FLASH_DRIVE_INVALID)	//如果fls驱动无效，说明是第一次烧录数据（烧录的是fls驱动）
 				{
 					FBL_FlashDown(FBL_TranDataAddres,FBL_TranDataLength,FBL_TranDataBuff);  //调用烧录fls驱动程序
+
+					/* Advance write pointer — previously every 0x36 packet
+					 * overwrote FLASH_DRIVE_ADDRESS (same as APP path's
+					 * FBL_FlashWrite address bump). */
+					FBL_TranDataAddres += FBL_TranDataLength;
 
 					sha_update(&ctx, FBL_TranDataBuff, FBL_TranDataLength);    //积累计算SHA
 

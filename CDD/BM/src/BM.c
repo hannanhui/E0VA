@@ -123,8 +123,11 @@ STATIC FUNC(boolean,AUTOMATIC) BM_GetAppValFlag(void)
 
 	VAR(boolean,AUTOMATIC) appValFlag = FALSE;
 
-	EE_ReadRecord(&eeConf,EE_BLOCK_FINGER_AppValFlag,4,&appValFlagData,&Read_Actual_Lengh,NULL);//读升级标志位
-	EE_DeleteRecord(&eeConf, 1, NULL);
+	appValFlagData = 0U;
+	/* Read only — do NOT EE_DeleteRecord on every boot. Delete writes an
+	 * invalidation marker and fills DFlash until sector swap hangs. Flag
+	 * is cleared once in BM_CheckEcuDownload when upgrade is consumed. */
+	(void)EE_ReadRecord(&eeConf,EE_BLOCK_FINGER_AppValFlag,4,(uint8 *)&appValFlagData,&Read_Actual_Lengh,NULL);//读升级标志位
 
 	if(appValFlagData == 0x95279527)//判断升级标志位
 	{
@@ -147,33 +150,17 @@ STATIC FUNC(boolean,AUTOMATIC) BM_GetAppValFlag(void)
 STATIC FUNC(void,AUTOMATIC) BM_RAMDeInit(void)
 {
 	VAR(FBL_LengthType,AUTOMATIC) u32Length;
+	volatile uint32 *pWord;
 
-	P2VAR(uint8,AUTOMATIC,AUTOMATIC) pDataBuffer;
+	/* Word clear — required for Z20K SRAM ECC at FLASH_DRIVE_ADDRESS. */
+	pWord = (volatile uint32 *)FLASH_DRIVE_ADDRESS;
+	u32Length = (uint32)FLASH_DRIVE_LENGTH / 4u;
 
-	pDataBuffer = (uint8 *)FLASH_DRIVE_ADDRESS;
-
-	u32Length = (uint32)FLASH_DRIVE_LENGTH;
-
-    /* clear flash driver in RAM */
-	if(pDataBuffer != NULL_PTR)
+	while (u32Length > 0u)
 	{
-		for(;u32Length > 0U;u32Length--)
-		{
-			if (pDataBuffer != NULL_PTR)
-			{
-				*pDataBuffer = 0x00U;
-
-				pDataBuffer++;
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-	else
-	{
-		/* Nothing  */
+		*pWord = 0u;
+		pWord++;
+		u32Length--;
 	}
 }
 
@@ -267,7 +254,7 @@ FUNC(void,AUTOMATIC) BM_CheckEcuDownload(void)
 	{
 		APP_Jump = 0x01;
 		appValFlagData = 0;
-		EE_WriteRecord(&eeConf,EE_BLOCK_FINGER_AppValFlag,4,&appValFlagData,0,NULL);//清除升级标志位
+		EE_WriteRecord(&eeConf,EE_BLOCK_FINGER_AppValFlag,4,(const uint8 *)&appValFlagData,0,NULL);//清除升级标志位
 	}
 
 }

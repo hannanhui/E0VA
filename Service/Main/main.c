@@ -103,10 +103,18 @@ int main()
 		g_boot_flag = 0u;
 	}
 
-	EE_Init(&eeConf, ENABLE, &CallBack);
+	{
+		uint32 eeRet = EE_Init(&eeConf, ENABLE, &CallBack);
 
-	BM_InitEcu();
-	BM_CheckEcuDownload();
+		BM_InitEcu();
+		/* If EE_Init fails (swap hang / both sectors bad), skip APP jump
+		 * path that depends on emulated EEPROM and stay in Boot+LIN for
+		 * recovery. Do not block forever in ErrorTrap — LIN must come up. */
+		if (eeRet == EE_OK)
+		{
+			BM_CheckEcuDownload();
+		}
+	}
 
 	WatchDogIf_Free();
 	WatchDogIf_Disable();
