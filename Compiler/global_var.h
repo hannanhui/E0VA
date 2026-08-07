@@ -5,12 +5,12 @@
 /*   Name         :      global_var.h                                                             */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
-/*   Modify date  :      2025-12-22 14:00:05 PM                                                   */
+/*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
 /*   Description  :                                                                               */
 /*                                                                                                */
 /*                                                                                                */
 /*   Compiler    :       KungFu32 IDE  [Version: V1.0.20.3]                                       */
-/*   Hardware    :       ChipOn microcontroller KF32A Family [KF32A156MQV]                        */
+/*   Hardware    :       ChipOn microcontroller KF32A Family [KF32A136KQT]                        */
 /*   Version     :       V1.0                                                                     */
 /*                                                                                                */
 /*                                                                                                */

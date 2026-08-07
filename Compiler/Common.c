@@ -5,12 +5,12 @@
 /*   Name         :      Common.c                                                                 */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
-/*   Modify date  :      2025-12-22 14:00:05 PM                                                   */
+/*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
 /*   Description  :                                                                               */
 /*                                                                                                */
 /*                                                                                                */
 /*   Compiler    :       KungFu32 IDE  [Version: V1.0.20.3]                                       */
-/*   Hardware    :       ChipOn microcontroller KF32A Family [KF32A156MQV]                        */
+/*   Hardware    :       ChipOn microcontroller KF32A Family [KF32A136KQT]                        */
 /*   Version     :       V1.0                                                                     */
 /*                                                                                                */
 /*                                                                                                */
@@ -58,6 +58,35 @@ const uint16_t crc16_ccitt_table[256]=
     0xef1fU, 0xff3eU, 0xcf5dU, 0xdf7cU, 0xaf9bU, 0xbfbaU, 0x8fd9U, 0x9ff8U,
     0x6e17U, 0x7e36U, 0x4e55U, 0x5e74U, 0x2e93U, 0x3eb2U, 0x0ed1U, 0x1ef0U
 };
+/* Lookup table to convert HEX to BCD */
+const uint8 hex2bcd[100u] = 
+{
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, /* 00-09 */
+    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, /* 10-19 */
+    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, /* 20-29 */
+    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, /* 30-39 */
+    0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, /* 40-49 */
+    0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, /* 50-59 */
+    0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, /* 60-69 */
+    0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, /* 70-79 */
+    0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, /* 80-89 */
+    0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, /* 90-99 */
+};
+
+uint8 Hex2Bcd(uint8 hex)
+{
+    if(hex<=99U)
+    {
+        return hex2bcd[hex];
+    }
+    else
+    {
+       return 0U;
+    }
+}
+
+
+
 /**************************************************************************************************/
 /* Function Name : CommCrcCout                                                                    */
 /* Description   : crc16_ccittverification                                                        */
@@ -85,33 +114,6 @@ uint16_t CommCrcCout(uint8_t *message, uint16_t len)
     
     return crc_reg;
 }
-// PEC(CRC8)�Ķ���ʽΪ C(x) = x8+ x2 + x1 + 1 = 0x107 , ȨֵΪ 0x07
-#define  CRC8_WEIGHT		0x07
-
-uint8_t CommCrcCal_crc8(uint8_t* pData, uint16_t Len, uint8_t Init_Val)
-{
-	uint8_t  CRC8 = Init_Val;
-
-	while(Len--)
-	{
-		CRC8 ^= *pData++;
-
-		for(uint8_t i=0; i<8; i++)
-		{
-			if(CRC8 & 0x80)
-			{
-				CRC8 = (CRC8 << 1) ^ CRC8_WEIGHT;
-			}
-			else
-			{
-				CRC8 <<= 1;
-			}
-		}
-	}
-
-	return CRC8;
-}
-
 
 void Delay_us(void)
 {
@@ -120,6 +122,108 @@ void Delay_us(void)
     for(i=0U;i<32U;i++)
     {
        // NOP();
+    }
+}
+/*
+uint8 memcpy(uint8 to[], uint8 from[], uint16 size) //PRQA S 4603
+{
+    if((NULL == to) || (NULL == from))
+    {
+        return 0;
+    }
+    if(!((to >= (&from[size])) || (from >= (&to[size]))))
+    {
+        return 0;
+    }
+    while(size > 0u)
+    {
+        size--;
+        to[size] = from[size];
+    }
+    return 1;
+}
+
+void memset(uint8 buff[],uint8 data,uint16 length) //PRQA S 4603
+{
+    uint16 i;
+    
+    for(i=0;i<length;i++)
+    {
+        buff[i] = data;
+    }
+}
+
+int memcmp(uint8 *buf1,uint8 *buf2,uint16 count) //PRQA S 4603
+{
+    uint16 i=0;
+    
+    for(i=0; i<count; i++)
+    {
+        if(buf1[i] < buf2[i])
+        {
+            return -1;
+        }
+        else if(buf1[i] > buf2[i])
+        {
+            return 1;
+        }
+		else //PRQA S qac-10.1.0-2013
+		{
+			;
+		}
+    }
+    return 0;
+}
+*/
+
+uint8 ByteCmpAbs(uint8 buf1 ,uint8 buf2)
+{
+    uint8 temp=0;
+
+    buf1 >= buf2 ? (temp=buf1-buf2) : (temp=buf2-buf1);
+
+    return temp;
+}
+
+void SortU16FromMinToMax(uint16 * buf,uint8 size)
+{
+    uint8 i,j;
+    uint16 temp=0u;
+    
+    for(j=0u;j<size;j++)
+    {
+        for(i=0u;i<size-j-1u;i++)
+        {
+            if(buf[i]>buf[i+1u])
+            {
+                temp=buf[i];
+                buf[i]=buf[i+1u];
+                buf[i+1u]=temp;
+            }
+        }
+    }
+}
+
+void GetArrMaxAndMinVal(int arr[], int size, int* max, int* min)
+{
+    uint16 i = 0u;
+    
+    *max = arr[0u];
+    for(i=0u;i<size;i++)
+    {
+        if(arr[i] > *max) //找出最大值
+        {
+            *max = arr[i];
+        }
+    }
+    
+    *min = arr[0u];
+    for(i=0u;i<size;i++)
+    {
+        if(arr[i] < *max) //找出最小值
+        {
+            *min = arr[i];
+        }
     }
 }
 

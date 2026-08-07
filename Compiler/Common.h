@@ -5,12 +5,12 @@
 /*   Name         :      Common.h                                                                 */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
-/*   Modify date  :      2025-12-22 14:00:05 PM                                                   */
+/*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
 /*   Description  :                                                                               */
 /*                                                                                                */
 /*                                                                                                */
 /*   Compiler    :       KungFu32 IDE  [Version: V1.0.20.3]                                       */
-/*   Hardware    :       ChipOn microcontroller KF32A Family [KF32A156MQV]                        */
+/*   Hardware    :       ChipOn microcontroller KF32A Family [KF32A136KQT]                        */
 /*   Version     :       V1.0                                                                     */
 /*                                                                                                */
 /*                                                                                                */
@@ -29,13 +29,18 @@
 #else
 #define COMMON_INTERFACE extern
 #endif
-extern void check_failed(uint8_t *File, uint32_t Line);
-//#define System_Check_Failed() Check_Failed(__FILE__, __LINE__)
-//#define CHECK_RESTRICTION(expr) ((expr) ? (void)0 : check_failed((uint8_t *)__FILE__, __LINE__))
+//COMMON_INTERFACE void memset(unsigned char buff[],unsigned char data,uint16 length);	//PRQA S 4604
+
+//COMMON_INTERFACE unsigned char memcpy(unsigned char to[], unsigned char from[],uint16 size);	//PRQA S 4604
+COMMON_INTERFACE uint8 Hex2Bcd(uint8 hex);
+COMMON_INTERFACE uint8 ByteCmpAbs(uint8 buf1 ,uint8 buf2);
+COMMON_INTERFACE void SortU16FromMinToMax(uint16* buf,uint8 size);
+
+COMMON_INTERFACE void GetArrMaxAndMinVal(int arr[], int size, int* max, int* min);
+
 
 COMMON_INTERFACE uint16_t CommCrcCout(uint8_t *message, uint16_t len);
 
-COMMON_INTERFACE uint8_t CommCrcCal_crc8(uint8_t* pData, uint16_t Len, uint8_t Init_Val);
 
 COMMON_INTERFACE void Delay_us(void);
 #endif /* COMPILER_COMMON_H_ */
