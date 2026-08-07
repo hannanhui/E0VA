@@ -44,7 +44,6 @@ extern "C"{
  *                                           INCLUDE FILES
  *====================================================================================================*/
 #include "Dcm_Internal.h"
-#include "FBL.h"
 
 #ifdef AH_TEST_DCM
 #include "TestCode.h"
@@ -160,17 +159,12 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x37
 	}
 	else
 	{
-		u32ResRecordDataLen = (pMsgContext->ReqDataLen - 1u);
+		u32ResRecordDataLen = (pMsgContext->ResMaxDataLen - 1u);
 
 		result = Dcm_ProcessRequestTransferExit(\
 						OpStatus, &pMsgContext->ReqData[1], DCM_DSP_TRANSFER_EXIT_REQ_RECORD_SIZE,\
 						&pMsgContext->ResData[1], &u32ResRecordDataLen, ErrorCode\
 						);
-		if(	E_OK != FBL_Dcm0x37Call())
-		{
-			*ErrorCode = DCM_E_REQUESTOUTOFRANGE;
-			result = E_NOT_OK;
-		}
 
 		if((Std_ReturnType)E_OK == result)
 		{

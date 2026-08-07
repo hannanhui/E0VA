@@ -537,7 +537,7 @@ STATIC FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x31StartRoutineHandle
 	if((Std_ReturnType)E_OK == result)
 	{
 		result = pStartRoutine->DcmDspStartRoutineFnc(\
-					&pMsgContext->ReqData[4], &pMsgContext->ReqData[4],\
+					&pMsgContext->ReqData[4], Dcm_UDS0x31Status.DataInVarPtr,\
 					opState,\
 					&pMsgContext->ResData[4], Dcm_UDS0x31Status.DataOutVarPtr,\
 					Dcm_UDS0x31Status.InSignalDynLen,\

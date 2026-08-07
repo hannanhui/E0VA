@@ -256,7 +256,6 @@ STATIC FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x36DownloadHandle
 
 	if((DCM_PENDING != opState) && (DCM_FORCE_RCRRP_OK != opState))
 	{
-		/*pxc modify first 1*/
 		if(((Dcm_TransferStatus.BlockLength <= Dcm_TransferStatus.MemorySize) && (u32RecordDataLen != Dcm_TransferStatus.BlockLength))\
 			|| ((Dcm_TransferStatus.BlockLength > Dcm_TransferStatus.MemorySize) && (((boolean)FALSE == Dcm_TransferStatus.IsLastBlock)\
 			|| (u32RecordDataLen != Dcm_TransferStatus.MemorySize))))

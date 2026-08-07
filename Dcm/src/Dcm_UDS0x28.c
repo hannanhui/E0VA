@@ -107,7 +107,6 @@ extern "C"{
 /*====================================================================================================*
  *                                            LOCAL MACROS
  *====================================================================================================*/
-
 #ifdef AH_UNITTEST_ENABLED
 
 	#ifdef STATIC
@@ -187,7 +186,6 @@ STATIC VAR(Dcm_CommunicationModeType, DCM_VAR)Dcm_CommunicationModeTable[6][3] =
 #define DCM_START_SEC_CODE
 #include "Dcm_MemMap.h"
 
-#if(0)
 STATIC FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x28Sub0x00To0x03Process
 (
 	uint8 u8SubServiceId,
@@ -529,7 +527,6 @@ STATIC FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x28Sub0x04And0x05Process
  * @retval			E_OK:Request was successful.
  * @retval			E_NOT_OK:Request was not successful.
  */
-#endif
 FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x28
 (
 	Dcm_OpStatusType OpStatus,
@@ -537,7 +534,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x28
 	P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
 )
 {
-	Std_ReturnType result = (Std_ReturnType)E_OK;
+	Std_ReturnType result = (Std_ReturnType)E_NOT_OK;
 
 	uint8 u8AddrType;
 	uint8 u8SubServiceId;
@@ -554,7 +551,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x28
 		u8AddrType = (pMsgContext->MsgAddInfo & 0x01u);
 
 		pService = DCM_GET_SERVICE_PTR(Dcm_ConnectionStatus[Dcm_ActiveConIdx].ServiceIdx);
-#if(0)
+
 		if((Std_ReturnType)E_OK == DspInternal_SubServiceCheck(u8AddrType, u8SubServiceId, pService, ErrorCode))
 		{
 			switch(u8SubServiceId)
@@ -575,7 +572,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x28
 					*ErrorCode = DCM_E_REQUESTOUTOFRANGE;
 					break;
 			}
-#endif
+
 			if((Std_ReturnType)E_OK == result)
 			{
 				/* The minimum length of the buffer is 8 bytes, no need to check the response length. */
@@ -585,10 +582,10 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x28
 
 				pMsgContext->ResDataLen = 2u;
 			}
+		}
 	}
 
 	return result;
-
 }
 
 #define DCM_STOP_SEC_CODE

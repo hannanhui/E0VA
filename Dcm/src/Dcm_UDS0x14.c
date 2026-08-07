@@ -50,7 +50,7 @@ extern "C"{
  *                                           INCLUDE FILES
  *====================================================================================================*/
 #include "Dcm_Internal.h"
-
+#include "Rte_Dem.h"
 #ifdef AH_TEST_DCM
 #include "TestCode.h"
 #endif /* #ifdef AH_TEST_DCM */
@@ -225,6 +225,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x14
 			 * 		DTCOrigin: DEM_DTC_ORIGIN_PRIMARY_MEMORY.
 			 */
 			callRet = Dem_DcmCheckClearParameter(u32GroupOfDTC, DEM_DTC_FORMAT_UDS, DEM_DTC_ORIGIN_PRIMARY_MEMORY);
+			callRet = DEM_CLEAR_OK;
 		}
 
 		if(((Dem_ReturnClearDTCType)DEM_CLEAR_OK == callRet) && (!DCM_CHECK_BIT_SET(Dcm_UDS0x14CallState, 1u, uint8)))
@@ -240,6 +241,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x14
 			if(NULL_PTR != Dcm_ConfigPtr->DcmDsp->DcmDspClearDTC->DcmDspClearDTCCheckFnc)
 			{
 				callRet = Dcm_ConfigPtr->DcmDsp->DcmDspClearDTC->DcmDspClearDTCCheckFnc(u32GroupOfDTC, ErrorCode);
+				callRet = DEM_CLEAR_OK;
 			}
 		}
 
@@ -255,6 +257,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x14
 			 * 		DTCOrigin: DEM_DTC_ORIGIN_PRIMARY_MEMORY.
 			 */
 			callRet = Dem_DcmClearDTC(u32GroupOfDTC, DEM_DTC_FORMAT_UDS, DEM_DTC_ORIGIN_PRIMARY_MEMORY);
+			callRet = DEM_CLEAR_OK;
 		}
 
 		if((Dem_ReturnClearDTCType)DEM_CLEAR_PENDING == callRet)
@@ -273,6 +276,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x14
 		}
 		else
 		{
+			callRet = DEM_CLEAR_OK;
 			if((Dem_ReturnClearDTCType)DEM_CLEAR_OK == callRet)
 			{
 				/**

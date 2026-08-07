@@ -247,7 +247,6 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x34
 						Dcm_TransferStatus.MemorySize = u32Size;
 						Dcm_TransferStatus.MemoryId = u8ReqMemoryId;
 						Dcm_TransferStatus.BlockLength = (pProtocolRow->DcmDslProtocolRxBufferRef->DcmDslBufferSize - 2u);
-						
 					}
 				}
 #if(0u != DCM_DSP_MEMORY_FORMAT_ID_NUM)

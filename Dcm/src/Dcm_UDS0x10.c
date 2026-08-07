@@ -53,10 +53,15 @@ extern "C"{
  *                                           INCLUDE FILES
  *====================================================================================================*/
 #include "Dcm_Internal.h"
+#include "mcu.h"
+#include "eep_emulation.h"
 
 #ifdef AH_TEST_DCM
 #include "TestCode.h"
 #endif /* #ifdef AH_TEST_DCM */
+#include "ee_config.h"
+#include "eep_emulation.h"
+#include "trng.h"
 
 #if(STD_ON == DCM_UDS0x10_ENABLE)
 #if(STD_ON == DCM_UDS0x10_INTERNAL_FNC_ENABLE)
@@ -157,6 +162,14 @@ extern "C"{
 /*====================================================================================================*
  *                                      LOCAL FUNCTION PROTOTYPES
  *====================================================================================================*/
+		
+STATIC void Ecu_Reset(void)
+{
+			 	uint32 appValFlagData = 0x95279527U;
+				EE_WriteRecord(&eeConf,EE_BLOCK_FINGER_AppValFlag,4,&appValFlagData,0,NULL);//?????
+				Mcu_PerformReset();
+}
+
 #define DCM_START_SEC_CODE
 #include "Dcm_MemMap.h"
 
@@ -227,7 +240,8 @@ STATIC FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x10JumpToBootHandle
 			 * 		triggering the mode switch of ModeDeclarationGroupPrototype DcmEcuReset to
 			 * 		JUMPTOSYSSUPPLIERBOOTLOADER.
 			 */
-			SchM_Switch_DcmEcuReset(RTE_MODE_DcmEcuReset_JUMPTOSYSSUPPLIERBOOTLOADER);
+				Ecu_Reset();
+//			SchM_Switch_DcmEcuReset(RTE_MODE_DcmEcuReset_JUMPTOSYSSUPPLIERBOOTLOADER);
 
 			break;
 		default:
@@ -241,7 +255,7 @@ STATIC FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x10JumpToBootHandle
 		 * @req [SWS_Dcm_00654] In case the ModeDeclarationGroupPrototype DcmEcuReset is switched to
 		 * 		mode JUMPTOBOOTLOADER or JUMPTOSYSSUPPLIERBOOTLOADER and the configuration parameter
 		 * 		DcmSendRespPendOnTransToBoot is set to TRUE, the DCM shall trigger transmission of NRC
-		 * 		0x78 – RCR-RP.
+		 * 		0x78 ï¿½ RCR-RP.
 		 *
 		 * @req [SWS_Dcm_01177] If the jump to bootloader is requested (see [SWS_Dcm_00532],
 		 * 		[SWS_Dcm_00592], the configuration parameter DcmSendRespPendOnTransToBoot is set to TRUE
@@ -364,6 +378,8 @@ STATIC FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x10JumpToBootHandle
  * @retval			E_OK:Request was successful.
  * @retval			E_NOT_OK:Request was not successful.
  */
+
+extern uint32 UpdataTriedCounter;
 FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x10
 (
 	Dcm_OpStatusType OpStatus,
@@ -379,6 +395,9 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x10
 	uint8 u8ConIdx = Dcm_ActiveConIdx;
 	const Dcm_DsdServiceType* pService = NULL_PTR;
 	const Dcm_DspSessionRowType* pSessionRow = NULL_PTR;
+	
+			/*no comm*/
+//	Dcm_ProtocolStartState = 1;
 
 	if(2u != pMsgContext->ReqDataLen)
 	{
@@ -428,6 +447,15 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x10
 				Dcm_NewActiveSession = u8SubServiceId;
 				Dcm_NewActiveSessionIdx = index;
 
+				if(Dcm_NewActiveSession == 0x02)
+				{
+					uint8 RealLeng = 0;
+					EE_ReadRecord(&eeConf,EE_UpdataTriedCounter,4,&UpdataTriedCounter,&RealLeng,NULL_PTR);
+					UpdataTriedCounter++;
+					EE_WriteRecord(&eeConf,EE_UpdataTriedCounter,4,&UpdataTriedCounter,0,NULL_PTR);
+				}
+				
+
 				result = (Std_ReturnType)E_OK;
 			}
 		}
@@ -435,6 +463,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x10
 
 	return result;
 }
+
 
 #define DCM_STOP_SEC_CODE
 #include "Dcm_MemMap.h"

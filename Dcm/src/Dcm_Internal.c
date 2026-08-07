@@ -97,8 +97,9 @@ extern "C"{
  *                                           INCLUDE FILES
  *====================================================================================================*/
 #include "Dcm_Internal.h"
-#include "LinIf.h"
-#include "common_drv.h"
+#include "Rte_Dem.h"
+#include "mcu.h"
+#include "eep_emulation.h"
 #if(STD_ON == DCM_DSP_TRNASFER_ERROR_HANDLING_ENABLE)
 /* Bootloader module, no need version check. */
 #include "FBL.h"
@@ -196,7 +197,6 @@ extern "C"{
  *====================================================================================================*/
 #define DCM_START_SEC_VAR_INIT_8
 #include "Dcm_MemMap.h"
-#include "BM.h"
 
 /**
  * @brief 	Independent pending buffer.
@@ -546,21 +546,21 @@ STATIC FUNC(boolean, DCM_CODE)DsdInternal_ResponseNRCHandle
 
 		if(DCM_E_RESPONSE_PENDING == Dcm_ConnectionStatus[u8ConIdx].NRC)
 		{
-// #if(STD_ON == DCM_DSP_SESSION_TIM_P2_PENDING_WINDOW)
-// 			if(Dcm_P2TimerStatus.PendingThreshold <= Dcm_P2TimerStatus.CurrentTime)
-// 			{
-// #endif /* #if(STD_ON == DCM_DSP_SESSION_TIM_P2_PENDING_WINDOW) */
+#if(STD_ON == DCM_DSP_SESSION_TIM_P2_PENDING_WINDOW)
+			if(Dcm_P2TimerStatus.PendingThreshold <= Dcm_P2TimerStatus.CurrentTime)
+			{
+#endif /* #if(STD_ON == DCM_DSP_SESSION_TIM_P2_PENDING_WINDOW) */
 
-// #if((STD_ON == DCM_DSD_SERVICE_P4_TIMER_ENABLE) || (STD_ON == DCM_DSD_SUB_SERVICE_P4_TIMER_ENABLE))
-// 				if(Dcm_P4TimerStatus.TimeoutTime == Dcm_P2TimerStatus.TimeoutTime)
-// 				{
-// 					Dcm_P2StarTimerStatus.PendingProcessState = (boolean)TRUE;
+#if((STD_ON == DCM_DSD_SERVICE_P4_TIMER_ENABLE) || (STD_ON == DCM_DSD_SUB_SERVICE_P4_TIMER_ENABLE))
+				if(Dcm_P4TimerStatus.TimeoutTime == Dcm_P2TimerStatus.TimeoutTime)
+				{
+					Dcm_P2StarTimerStatus.PendingProcessState = (boolean)TRUE;
 
-// 					result = (boolean)FALSE;
-// 				}
-// 				else
-// #endif /* #if((STD_ON == DCM_DSD_SERVICE_P4_TIMER_ENABLE) || (STD_ON == DCM_DSD_SUB_SERVICE_P4_TIMER_ENABLE)) */
-// 				{
+					result = (boolean)FALSE;
+				}
+				else
+#endif /* #if((STD_ON == DCM_DSD_SERVICE_P4_TIMER_ENABLE) || (STD_ON == DCM_DSD_SUB_SERVICE_P4_TIMER_ENABLE)) */
+				{
 					/**
 					 * @req [SWS_Dcm_00203] In case of responsePending the DCM module shall clear the
 					 * 		"suppressPosRspMsgIndicationBit.�
@@ -598,17 +598,17 @@ STATIC FUNC(boolean, DCM_CODE)DsdInternal_ResponseNRCHandle
 
 					DCM_DET_ERROR_REPORT(DCM_SID_MAINFUNCTION, DCM_E_INTERFACE_TIMEOUT);
 #endif /* #if(0u != DCM_DSL_DIAG_RESP_MAX_NUM_RESP_PEND) */
-				// }
+				}
 
-// #if(STD_ON == DCM_DSP_SESSION_TIM_P2_PENDING_WINDOW)
-// 			}
-// 			else
-// 			{
-// 				Dcm_P2StarTimerStatus.PendingProcessState = (boolean)TRUE;
+#if(STD_ON == DCM_DSP_SESSION_TIM_P2_PENDING_WINDOW)
+			}
+			else
+			{
+				Dcm_P2StarTimerStatus.PendingProcessState = (boolean)TRUE;
 
-// 				result = (boolean)FALSE;
-// 			}
-// #endif /* #if(STD_ON == DCM_DSP_SESSION_TIM_P2_PENDING_WINDOW) */
+				result = (boolean)FALSE;
+			}
+#endif /* #if(STD_ON == DCM_DSP_SESSION_TIM_P2_PENDING_WINDOW) */
 		}
 
 #if(0u != DCM_DSL_DIAG_RESP_MAX_NUM_RESP_PEND)
@@ -729,7 +729,7 @@ STATIC FUNC(void, DCM_CODE)DsdInternal_ResponseProcess
 			 * @req [SWS_Dcm_00232] The DSD submodule shall forward the diagnostic (response) message
 			 * 		(positive or negative response) to the DSL submodule.
 			 */
-			if(DCM_COMM_FULL_COMMUNICATION == 2/*Dcm_ComMStatus[u8ConIdx].CommunicationState*/)
+			if(DCM_COMM_FULL_COMMUNICATION == Dcm_ComMStatus[u8ConIdx].CommunicationState)
 			{
 				DslInternal_TransmitHandle(pProtocolTx->DcmDslProtocolTxPduRef);
 			}
@@ -1183,15 +1183,17 @@ STATIC FUNC(void, DCM_CODE)DspInternal_SessionControlConfirmation
 	 * 		[SWS_Dcm_00535], the Dcm shall trigger the mode switch of the ModeDeclarationGroupPrototype
 	 * 		DcmEcuReset to EXECUTE.
 	 */
-	if((DCM_PROGRAMMING_SESSION == pSessionRow->DcmDspSessionLevel) && (DCM_NO_BOOT != pSessionRow->DcmDspSessionForBoot))
-	{
-//		SchM_Switch_DcmEcuReset(RTE_MODE_DcmEcuReset_EXECUTE);
-
-	}
-	else
-	{
-		DslInternal_SetSesCtrlType(Dcm_NewActiveSession);
-	}
+	 if((DCM_PROGRAMMING_SESSION == pSessionRow->DcmDspSessionLevel) && (DCM_NO_BOOT != pSessionRow->DcmDspSessionForBoot))
+	 {
+//			SchM_Switch_DcmEcuReset(RTE_MODE_DcmEcuReset_EXECUTE);
+//		 	uint32 appValFlagData = 0x95279527U;
+//			EE_WriteRecord(&eeConf,EE_BLOCK_FINGER_AppValFlag,4,&appValFlagData,0,NULL);//升级标志位
+//			Mcu_PerformReset();
+	 }
+	 else
+	 {
+	 	DslInternal_SetSesCtrlType(Dcm_NewActiveSession);
+	 }
 }
 #endif /* #if(STD_ON == DCM_UDS0x10_ENABLE) */
 
@@ -1215,8 +1217,7 @@ STATIC FUNC(void, DCM_CODE)DspInternal_EcuResetConfirmation
 	 * @req [SWS_Dcm_00834] After sending the positive response of EcuReset (call of
 	 * 		Dcm_TpTxConfirmation) the DCM shall ignore all further requests during resetprocessing.
 	 */
-//	SchM_Switch_DcmEcuReset(RTE_MODE_DcmEcuReset_EXECUTE);
-	BM_DeInit();
+	SchM_Switch_DcmEcuReset(RTE_MODE_DcmEcuReset_EXECUTE);
 }
 #endif /* #if(STD_ON == DCM_UDS0x11_ENABLE) */
 
@@ -1281,9 +1282,8 @@ STATIC FUNC(void, DCM_CODE)DspInternal_ResetServiceSetState
 	Dcm_SesCtrlType sesCtrlType,
 	Dcm_SessionDataType newSesIdx
 )
-
 {
-//#if((STD_ON == DCM_UDS0x28_ENABLE) || (STD_ON == DCM_UDS0x2A_ENABLE) || (STD_ON == DCM_UDS0x85_ENABLE))
+#if((STD_ON == DCM_UDS0x28_ENABLE) || (STD_ON == DCM_UDS0x2A_ENABLE) || (STD_ON == DCM_UDS0x85_ENABLE))
 
 	uint8 u8ILoop;
 #if((STD_ON == DCM_UDS0x2C_ENABLE) && (STD_ON == DCM_DSP_DDDID_CHECK_PER_SOURCE_DID))
@@ -1314,7 +1314,7 @@ STATIC FUNC(void, DCM_CODE)DspInternal_ResetServiceSetState
 		{
 			if(DCM_CHECK_BIT_SET(Dcm_CommunicationState, u8ILoop, uint32))
 			{
-//				BswM_Dcm_CommunicationMode_CurrentState(u8ILoop, DCM_ENABLE_RX_TX_NORM_NM);
+				BswM_Dcm_CommunicationMode_CurrentState(u8ILoop, DCM_ENABLE_RX_TX_NORM_NM);
 
 				DCM_BIT_CLEAR(Dcm_CommunicationState, u8ILoop, uint32);
 			}
@@ -1387,7 +1387,6 @@ STATIC FUNC(void, DCM_CODE)DspInternal_ResetServiceSetState
 	}
 #endif /* #if(STD_ON == DCM_UDS0x2A_ENABLE) */
 
-#if(0)
 #if(STD_ON == DCM_UDS0x85_ENABLE)
 	if(((boolean)TRUE == Dcm_DisableDTCState) && ((DCM_DEFAULT_SESSION == sesCtrlType) ||\
 		(!DCM_CHECK_BIT_SET(Dcm_ConfigPtr->DcmDsd->DcmDsdUDS0x85SesRef, newSesIdx, Dcm_SessionDataType))))
@@ -2015,7 +2014,7 @@ FUNC(void, DCM_CODE)DslInternal_ResetConnectionStatus
 		 * 		received Pdu, to inform the ComM module that Full Communication is not longer needed.
 		 */
 		Dcm_ComMStatus[u8ConIdx].DiagnosticState = DCM_COMM_NOT_ACTIVE;
-//		ComM_DCM_InactiveDiagnostic(Dcm_ConfigPtr->DcmDslMainConnection[u8ConIdx].DcmDslProtocolComMChannelRef);
+		ComM_DCM_InactiveDiagnostic(Dcm_ConfigPtr->DcmDslMainConnection[u8ConIdx].DcmDslProtocolComMChannelRef);
 	}
 
 	Dcm_ActiveConIdx = 0xFFu;
@@ -2083,7 +2082,8 @@ FUNC(void, DCM_CODE)DslInternal_SetSesCtrlType
 	if(DCM_DEFAULT_SESSION != SesCtrlType)
 	{
 		Dcm_ComMStatus[u8ConIdx].DiagnosticState = DCM_COMM_ACTIVE;
-//		ComM_DCM_ActiveDiagnostic(Dcm_ConfigPtr->DcmDslMainConnection[u8ConIdx].DcmDslProtocolComMChannelRef);
+		//ComM_DCM_ActiveDiagnostic(Dcm_ConfigPtr->DcmDslMainConnection[u8ConIdx].DcmDslProtocolComMChannelRef);
+		Dcm_ComMStatus[u8ConIdx].CommunicationState = DCM_COMM_FULL_COMMUNICATION;
 	}
 
 	/**
@@ -2258,7 +2258,7 @@ FUNC(void, DCM_CODE)DslInternal_TimerProcess
 			for(u8Index = 0u; u8Index < DCM_DSL_MAIN_CONNECTION_NUM; u8Index++)
 			{
 				Dcm_ComMStatus[u8Index].DiagnosticState = DCM_COMM_NOT_ACTIVE;
-//				ComM_DCM_InactiveDiagnostic(Dcm_ConfigPtr->DcmDslMainConnection[u8Index].DcmDslProtocolComMChannelRef);
+				ComM_DCM_InactiveDiagnostic(Dcm_ConfigPtr->DcmDslMainConnection[u8Index].DcmDslProtocolComMChannelRef);
 			}
 
 #if(STD_ON == DCM_DSP_TRNASFER_ERROR_HANDLING_ENABLE)
@@ -2269,7 +2269,6 @@ FUNC(void, DCM_CODE)DslInternal_TimerProcess
 				FBL_Init();
 			}
 #endif /* #if(STD_ON == DCM_DSP_TRNASFER_ERROR_HANDLING_ENABLE) */
-			COMMON_SystemReset();
 		}
 	}
 
@@ -2453,7 +2452,7 @@ FUNC(BufReq_ReturnType, DCM_CODE)DslInternal_SetNRCAndTransmit
 		info.SduDataPtr[1] = u8Sid;
 		info.SduDataPtr[2] = NRC;
 
-		if((Std_ReturnType)E_OK == LinTp_Transmit(id, &info))
+		if((Std_ReturnType)E_OK == PduR_DcmTransmit(id, &info))
 		{
 			Dcm_ConnectionStatus[u8ProConIdx].CopyOffset = 0u;
 			Dcm_ConnectionStatus[u8ProConIdx].RemainLen = info.SduLength;
@@ -2812,7 +2811,7 @@ FUNC(void, DCM_CODE)DslInternal_TransmitHandle
 	 * @req [SWS_Dcm_00237] The DSL submodule shall forward the diagnostic (response) message (positive
 	 * 		or negative response) further to the PduR module by executing a DSL transmit functionality.
 	 */
-	if((Std_ReturnType)E_OK == LinTp_Transmit(id, &info))
+	if((Std_ReturnType)E_OK == PduR_DcmTransmit(id, &info))
 	{
 		if((boolean)TRUE == Dcm_P2TimerStatus.TimerEnable)
 		{
@@ -2865,7 +2864,6 @@ FUNC(void, DCM_CODE)DsdInternal_ServiceProcess
 	Std_ReturnType result = (Std_ReturnType)E_NOT_OK;
 	const Dcm_DsdServiceType* pService = NULL_PTR;
 	const Dcm_DslProtocolRowType* pProtocolRow = NULL_PTR;
-//	u8ConIdx = 0;
 
 	if(DCM_RX_STATE_PROCESS == Dcm_ConnectionStatus[u8ConIdx].RxState)
 	{
@@ -3500,7 +3498,7 @@ FUNC(void, DCM_CODE)DspInternal_JumpFromHandle
 		 * 		(Dcm_ProgConditionsType.ApplUpdated == True), the DCM shall call
 		 * 		BswM_Dcm_ApplicationUpdated() to notify the BswM that the application was updated.
 		 */
-//		BswM_Dcm_ApplicationUpdated();
+		BswM_Dcm_ApplicationUpdated();
 	}
 	else
 	{
@@ -3529,7 +3527,8 @@ FUNC(void, DCM_CODE)DspInternal_JumpFromHandle
 		 * 		bootloader / ECUReset (see [SWS_Dcm_00536, the DCM shall call ComM_DCM_ActiveDiagnostic
 		 * 		(NetworkId) to request the ComManager for the full communication mode.
 		 */
-//		ComM_DCM_ActiveDiagnostic(pConnection->DcmDslProtocolComMChannelRef);
+		//ComM_DCM_ActiveDiagnostic(pConnection->DcmDslProtocolComMChannelRef);
+		Dcm_ComMStatus[Dcm_ActiveConIdx].CommunicationState = DCM_COMM_FULL_COMMUNICATION;
 	}
 }
 
@@ -4049,7 +4048,7 @@ FUNC(void, DCM_CODE)DspInternal_PeriodicTransmission
 						{
 							id = pPeriodicConnection->DcmDslPeriodicTxPduRef;
 
-							if((Std_ReturnType)E_OK == LinTp_Transmit(id, &info))
+							if((Std_ReturnType)E_OK == PduR_DcmTransmit(id, &info))
 							{
 								/**
 								 * @req [SWS_Dcm_01102] After triggering the transmission request to the

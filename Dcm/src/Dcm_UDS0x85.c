@@ -47,10 +47,11 @@ extern "C"{
  *                                           INCLUDE FILES
  *====================================================================================================*/
 #include "Dcm_Internal.h"
-
+#include "Dem_Dcm.h"
 #ifdef AH_TEST_DCM
 #include "TestCode.h"
 #endif /* #ifdef AH_TEST_DCM */
+#include "Rte_Dem.h"
 
 #if(STD_ON == DCM_UDS0x85_ENABLE)
 #if(STD_ON == DCM_UDS0x85_INTERNAL_FNC_ENABLE)
@@ -157,12 +158,12 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x85
 	P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
 )
 {
-	Std_ReturnType result = (Std_ReturnType)E_OK;
+	Std_ReturnType result = (Std_ReturnType)E_NOT_OK;
 
 	uint8 u8Ret;
 	uint8 u8SubId;
 	uint8 u8AddrType;
-	uint32 u32DTC = 0xFFFFFFu/*DEM_DTC_GROUP_ALL_DTCS*/;
+	uint32 u32DTC = DEM_DTC_GROUP_ALL_DTCS;
 	const Dcm_DsdServiceType* pService = NULL_PTR;
 	const Dcm_DspControlDTCSettingType* pControlDTC = NULL_PTR;
 
@@ -177,7 +178,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x85
 		u8AddrType = (pMsgContext->MsgAddInfo & 0x01u);
 
 		pService = DCM_GET_SERVICE_PTR(Dcm_ConnectionStatus[Dcm_ActiveConIdx].ServiceIdx);
-#if(0)
+
 		if((Std_ReturnType)E_OK == DspInternal_SubServiceCheck(u8AddrType, u8SubId, pService, ErrorCode))
 		{
 			pControlDTC = Dcm_ConfigPtr->DcmDsp->DcmDspControlDTCSetting;
@@ -226,7 +227,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x85
 				 */
 				if(0x01u == u8SubId)
 				{
-					u8Ret = E_OK;
+					u8Ret = Dem_DcmEnableDTCSetting(u32DTC, DEM_DTC_KIND_ALL_DTCS);
 				}
 				/**
 				 * @req [SWS_Dcm_01064] On reception of the UDS Service 0x85 with DTCSettingType =
@@ -243,7 +244,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x85
 				 */
 				else
 				{
-					u8Ret = E_OK;
+					u8Ret = Dem_DcmDisableDTCSetting(u32DTC, DEM_DTC_KIND_ALL_DTCS);
 				}
 
 				/**
@@ -259,7 +260,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x85
 				 * 		SchM_Switch_<bsnp>_DcmControlDTCSetting
 				 * 		(RTE_MODE_DcmControlDTCSetting_DISABLEDTCSETTING).
 				 */
-				if(E_OK == u8Ret)
+				if((uint8)DEM_CONTROL_DTC_SETTING_OK == u8Ret)
 				{
 					/* The minimum length of the buffer is 8 bytes, no need to check the response length. */
 
@@ -273,7 +274,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x85
 
 						Dcm_DisableDTCState = (boolean)TRUE;
 					}
-#endif
+
 					pMsgContext->ResData[0] = 0xC5u;
 					pMsgContext->ResData[1] = u8SubId;
 
@@ -281,6 +282,19 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x85
 
 					result = (Std_ReturnType)E_OK;
 				}
+				/**
+				 * @req [SWS_Dcm_00830] In case of Dem_DcmDisableDTCSetting or Dem_DcmEnableDTCSetting
+				 * 		returns DEM_CONTROL_DTC_WRONG_DTCGROUP (wrong groupOfDTC), the Dcm shall return
+				 * 		NRC 0x31 (RequestOutOfRange).
+				 */
+				else
+				{
+					*ErrorCode = DCM_E_REQUESTOUTOFRANGE;
+				}
+			}
+		}
+	}
+
 	return result;
 }
 

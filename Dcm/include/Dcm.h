@@ -39,7 +39,7 @@ extern "C"{
  *                                           INCLUDE FILES
  *====================================================================================================*/
 #include "Dcm_Types.h"
-//#include "Dem.h"
+#include "Dem.h"
 #if(STD_ON == DCM_DEV_ERROR_DETECT)
 #include "Det.h"
 #endif /* #if(STD_ON == DCM_DEV_ERROR_DETECT) */
@@ -306,14 +306,12 @@ FUNC(void, DCM_CODE)Dcm_MainFunction
 	void
 );
 
-#if(0)
 FUNC(Std_ReturnType, DCM_CODE)Dcm_DemTriggerOnDTCStatus
 (
 	uint32 DTC,
 	Dem_UdsStatusByteType DTCStatusOld,
 	Dem_UdsStatusByteType DTCStatusNew
 );
-#endif
 
 #define DCM_STOP_SEC_CODE
 #include "Dcm_MemMap.h"

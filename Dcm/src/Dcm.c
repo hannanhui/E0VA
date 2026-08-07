@@ -506,7 +506,6 @@ FUNC(void, DCM_CODE)Dcm_GetVersionInfo
  *
  * @req [SWS_Dcm_00614]
  */
-#if(0)
 FUNC(Std_ReturnType, DCM_CODE)Dcm_DemTriggerOnDTCStatus
 (
 	uint32 DTC,
@@ -526,7 +525,6 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_DemTriggerOnDTCStatus
 
 	return (Std_ReturnType)E_OK;
 }
-#endif
 
 /**
  * @sid				0x07
@@ -804,8 +802,9 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_SetActiveDiagnostic
 				pConnection = &Dcm_ConfigPtr->DcmDslMainConnection[u8Index];
 
 				Dcm_ComMStatus[u8Index].DiagnosticState = DCM_COMM_ACTIVE;
+				Dcm_ComMStatus[u8Index].CommunicationState = DCM_COMM_FULL_COMMUNICATION;
 
-//				(void)ComM_DCM_ActiveDiagnostic(pConnection->DcmDslProtocolComMChannelRef);
+				//(void)ComM_DCM_ActiveDiagnostic(pConnection->DcmDslProtocolComMChannelRef);
 			}
 		}
 		else
@@ -1160,7 +1159,8 @@ FUNC(void, DCM_CODE)Dcm_TpRxIndication
 					if(DCM_DEFAULT_SESSION == Dcm_ActiveSession)
 					{
 						Dcm_ComMStatus[u8ProConIdx].DiagnosticState = DCM_COMM_ACTIVE;
-//						ComM_DCM_ActiveDiagnostic(Dcm_ConfigPtr->DcmDslMainConnection[u8ProConIdx].DcmDslProtocolComMChannelRef);
+						Dcm_ComMStatus[u8ProConIdx].CommunicationState = DCM_COMM_FULL_COMMUNICATION;
+						//ComM_DCM_ActiveDiagnostic(Dcm_ConfigPtr->DcmDslMainConnection[u8ProConIdx].DcmDslProtocolComMChannelRef);
 					}
 
 					/**

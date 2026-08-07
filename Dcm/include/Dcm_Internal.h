@@ -42,12 +42,12 @@ extern "C"{
  *====================================================================================================*/
 #include "Dcm.h"
 #include "Dcm_Externals.h"
-//#include "Dem.h"
-//#include "NvM.h"
-//#include "Dem_Dcm.h"
-//#include "BswM_Dcm.h"
-//#include "PduR_Dcm.h"
-//#include "ComM_Dcm.h"
+#include "Dem.h"
+#include "NvM.h"
+#include "Dem_Dcm.h"
+#include "BswM_Dcm.h"
+#include "PduR_Dcm.h"
+#include "ComM_Dcm.h"
 #include "SchM_Dcm.h"
 /*====================================================================================================*
  *                                  HEADER FILE VERSION INFORMATION
