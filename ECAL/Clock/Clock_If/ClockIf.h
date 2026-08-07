@@ -2,7 +2,7 @@
 /*                                                                                                */
 /*   Project      :                                                                               */
 /*   Type         :      H source file                                                            */
-/*   Name         :      BSW.h                                                                    */
+/*   Name         :      ClockIf.h                                                                */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
 /*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
@@ -18,10 +18,15 @@
 /*   owner prohibited.                                                                            */
 /*                                                                                                */
 /**************************************************************************************************/
-#ifndef __INCLUDE_BSW_H__
-#define __INCLUDE_BSW_H__
-//#include "MCAL\MCAL.h"
-#include "ECAL.h"
-#include "ExtDevices.h"
+#ifndef CLOCK_IF_H_
+#define CLOCK_IF_H_
 
-#endif /*__INCLUDE_BSW_H__*/
+#include "Type_Define.h"
+
+
+extern void Clock_Func_GPIO_Peripheral_Disable(void);
+
+extern void CLOCK_Init(void);
+
+
+#endif /* CLOCK_IF_H_ */

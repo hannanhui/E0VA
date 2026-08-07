@@ -2,7 +2,7 @@
 /*                                                                                                */
 /*   Project      :                                                                               */
 /*   Type         :      H source file                                                            */
-/*   Name         :      BSW.h                                                                    */
+/*   Name         :      FlashIf.h                                                                */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
 /*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
@@ -18,10 +18,18 @@
 /*   owner prohibited.                                                                            */
 /*                                                                                                */
 /**************************************************************************************************/
-#ifndef __INCLUDE_BSW_H__
-#define __INCLUDE_BSW_H__
-//#include "MCAL\MCAL.h"
-#include "ECAL.h"
-#include "ExtDevices.h"
+#ifndef _FLASH_IF_H_
+#define _FLASH_IF_H_
 
-#endif /*__INCLUDE_BSW_H__*/
+typedef enum 
+{
+	Mcu_Run_Area_Boot        = 0x00U,
+	Mcu_Run_Area_App    	= 0x01U
+} Mcu_Run_AreaDef;
+
+
+extern uint8_t DFlashIf_McuRunAreaModuleSet(Mcu_Run_AreaDef opMode);
+
+extern Mcu_Run_AreaDef DFlashIf_McuRunAreaModuleGet(void);
+
+#endif /* _FLASH_IF_H_ */

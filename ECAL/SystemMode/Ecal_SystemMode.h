@@ -2,7 +2,7 @@
 /*                                                                                                */
 /*   Project      :                                                                               */
 /*   Type         :      H source file                                                            */
-/*   Name         :      BSW.h                                                                    */
+/*   Name         :      SystemMode.h                                                             */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
 /*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
@@ -18,10 +18,17 @@
 /*   owner prohibited.                                                                            */
 /*                                                                                                */
 /**************************************************************************************************/
-#ifndef __INCLUDE_BSW_H__
-#define __INCLUDE_BSW_H__
-//#include "MCAL\MCAL.h"
-#include "ECAL.h"
-#include "ExtDevices.h"
+#ifndef __INCLUDE_SYSTEMMODE_H__
+#define __INCLUDE_SYSTEMMODE_H__
 
-#endif /*__INCLUDE_BSW_H__*/
+
+#include "Type_Define.h"
+//#include "intp.h"
+#include "model_Cfg_feature.h"
+#include "common.h"
+#include "SystemMode_Cfg.h"
+#include "SystemModeIf.h"
+
+
+
+#endif /*__INCLUDE_SYSTEMMODE_H__ */

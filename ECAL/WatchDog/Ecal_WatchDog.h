@@ -2,7 +2,7 @@
 /*                                                                                                */
 /*   Project      :                                                                               */
 /*   Type         :      H source file                                                            */
-/*   Name         :      BSW.h                                                                    */
+/*   Name         :      WatchDog.h                                                               */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
 /*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
@@ -18,10 +18,21 @@
 /*   owner prohibited.                                                                            */
 /*                                                                                                */
 /**************************************************************************************************/
-#ifndef __INCLUDE_BSW_H__
-#define __INCLUDE_BSW_H__
-//#include "MCAL\MCAL.h"
-#include "ECAL.h"
-#include "ExtDevices.h"
+#ifndef __INCLUDE_WATCHDOG_H__
+#define __INCLUDE_WATCHDOG_H__
 
-#endif /*__INCLUDE_BSW_H__*/
+
+
+#include "model_Cfg_feature.h"
+
+#include "Type_Define.h"
+//#include "WdgM.h"
+//#include "WdgIf.h"
+
+#include "WatchDog_Cfg.h"
+#include "WatchDogIf.h"
+
+
+
+
+#endif /*__INCLUDE_WATCHDOG_H__*/

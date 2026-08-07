@@ -2,7 +2,7 @@
 /*                                                                                                */
 /*   Project      :                                                                               */
 /*   Type         :      H source file                                                            */
-/*   Name         :      BSW.h                                                                    */
+/*   Name         :      WatchDogIf.h                                                             */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
 /*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
@@ -18,10 +18,20 @@
 /*   owner prohibited.                                                                            */
 /*                                                                                                */
 /**************************************************************************************************/
-#ifndef __INCLUDE_BSW_H__
-#define __INCLUDE_BSW_H__
-//#include "MCAL\MCAL.h"
-#include "ECAL.h"
-#include "ExtDevices.h"
+#ifndef WATCH_IF_H_
+#define WATCH_IF_H_
 
-#endif /*__INCLUDE_BSW_H__*/
+
+
+extern  void WatchDogIf_Init(void);
+extern void WatchDogIf_Free(void);
+
+
+
+extern void WatchDogIf_Disable(void);
+extern void WatchDogIf_Enable(void);
+
+
+
+
+#endif /* WATCH_IF_H_ */

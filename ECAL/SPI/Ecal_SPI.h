@@ -2,7 +2,7 @@
 /*                                                                                                */
 /*   Project      :                                                                               */
 /*   Type         :      H source file                                                            */
-/*   Name         :      BSW.h                                                                    */
+/*   Name         :      SPI.h                                                                    */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
 /*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
@@ -18,10 +18,18 @@
 /*   owner prohibited.                                                                            */
 /*                                                                                                */
 /**************************************************************************************************/
-#ifndef __INCLUDE_BSW_H__
-#define __INCLUDE_BSW_H__
-//#include "MCAL\MCAL.h"
-#include "ECAL.h"
-#include "ExtDevices.h"
+#ifndef __INCLUDE_SPI_H__
+#define __INCLUDE_SPI_H__
+#include "model_Cfg_feature.h"
 
-#endif /*__INCLUDE_BSW_H__*/
+#include "Spi.h"
+
+#include "Spi_Cfg_MGP.h"
+
+#include "Ecal_PORT.h"
+#include "SpiIf.h"
+
+
+
+
+#endif /* __INCLUDE_SPI_H__ */

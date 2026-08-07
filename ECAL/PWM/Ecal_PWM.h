@@ -2,7 +2,7 @@
 /*                                                                                                */
 /*   Project      :                                                                               */
 /*   Type         :      H source file                                                            */
-/*   Name         :      BSW.h                                                                    */
+/*   Name         :      PWM.h                                                                    */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
 /*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
@@ -18,10 +18,17 @@
 /*   owner prohibited.                                                                            */
 /*                                                                                                */
 /**************************************************************************************************/
-#ifndef __INCLUDE_BSW_H__
-#define __INCLUDE_BSW_H__
-//#include "MCAL\MCAL.h"
-#include "ECAL.h"
-#include "ExtDevices.h"
+#ifndef __INCLUDE_PWM_H__
+#define __INCLUDE_PWM_H__
+#include "model_Cfg_feature.h"
+#include "Pwm.h"
 
-#endif /*__INCLUDE_BSW_H__*/
+#include "Pwm_Cfg_MGP.h"
+#include "PwmIf.h"
+
+
+
+
+
+
+#endif /* __INCLUDE_PWM_H__ */

@@ -1,8 +1,8 @@
 /**************************************************************************************************/
 /*                                                                                                */
 /*   Project      :                                                                               */
-/*   Type         :      H source file                                                            */
-/*   Name         :      BSW.h                                                                    */
+/*   Type         :      C source file                                                            */
+/*   Name         :      ClockIf.c                                                                */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
 /*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
@@ -18,10 +18,47 @@
 /*   owner prohibited.                                                                            */
 /*                                                                                                */
 /**************************************************************************************************/
-#ifndef __INCLUDE_BSW_H__
-#define __INCLUDE_BSW_H__
-//#include "MCAL\MCAL.h"
-#include "ECAL.h"
-#include "ExtDevices.h"
+#include "Ecal_Clock.h"
 
-#endif /*__INCLUDE_BSW_H__*/
+
+void Clock_System_Init(void)
+{
+	McalLib_Init();
+    Mcu_Init(NULL_PTR);
+    
+    Mcu_InitClock(0u);
+    
+#if(MCU_NO_PLL == STD_OFF)
+    while(MCU_PLL_LOCKED != Mcu_GetPllStatus());
+    Mcu_DistributePllClock();
+#endif /* MCU_NO_PLL == STD_OFF */
+}
+
+
+
+
+void Clock_Func_GPIO_Peripheral_En(void)
+{
+	
+}
+
+void Clock_Func_GPIO_Peripheral_Disable(void)
+{
+
+
+}
+
+void Clock_Func_Init(void)
+{
+	Clock_Func_GPIO_Peripheral_En();
+	//TBD
+}
+
+void CLOCK_Init(void)
+{
+	Clock_System_Init();
+	
+	Clock_Func_Init();
+	
+}
+

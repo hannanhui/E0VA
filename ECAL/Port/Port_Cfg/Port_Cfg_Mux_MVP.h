@@ -2,7 +2,7 @@
 /*                                                                                                */
 /*   Project      :                                                                               */
 /*   Type         :      H source file                                                            */
-/*   Name         :      BSW.h                                                                    */
+/*   Name         :      Port_Cfg_Mux_MVP.h                                                       */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
 /*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
@@ -18,10 +18,16 @@
 /*   owner prohibited.                                                                            */
 /*                                                                                                */
 /**************************************************************************************************/
-#ifndef __INCLUDE_BSW_H__
-#define __INCLUDE_BSW_H__
-//#include "MCAL\MCAL.h"
-#include "ECAL.h"
-#include "ExtDevices.h"
+#ifndef PIN_CFG_MUX_MVP_H_
+#define PIN_CFG_MUX_MVP_H_
 
-#endif /*__INCLUDE_BSW_H__*/
+
+/* MODULE pin_mux. */
+
+
+
+
+
+
+
+#endif /* PIN_MUX_X9PRO_H_ */

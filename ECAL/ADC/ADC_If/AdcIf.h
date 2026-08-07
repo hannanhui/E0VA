@@ -2,7 +2,7 @@
 /*                                                                                                */
 /*   Project      :                                                                               */
 /*   Type         :      H source file                                                            */
-/*   Name         :      BSW.h                                                                    */
+/*   Name         :      AdcIf.h                                                                  */
 /*   Instance     :                                                                               */
 /*   Author       :      Ed                                                                       */
 /*   Modify date  :      2025-04-11 11:08:33 AM                                                   */
@@ -18,10 +18,21 @@
 /*   owner prohibited.                                                                            */
 /*                                                                                                */
 /**************************************************************************************************/
-#ifndef __INCLUDE_BSW_H__
-#define __INCLUDE_BSW_H__
-//#include "MCAL\MCAL.h"
-#include "ECAL.h"
-#include "ExtDevices.h"
+#ifndef ADC_IF_H_
+#define ADC_IF_H_
 
-#endif /*__INCLUDE_BSW_H__*/
+
+#include "ADC_DESC.h"
+
+
+
+extern void ADCIf_Init(void);
+extern void ADCIf_DeInit(void);
+extern void ADCIf_Irq_Handler(void);
+extern BOOL ADCIf_Periodic_10mS_Call_Func(void);
+extern BOOL ADCIf_Periodic_1mS_Call_Func(void);
+
+extern uint16_t ADCIf_Get_Normal_CalculateVoltage(uint8_t Ch);
+
+
+#endif /* ADC_ADC_H_ */
