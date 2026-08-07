@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<ANGHUI xmlns="https://www.gkanghui.com/easysar/schema/v1.0" L="EN">
+    <PRODUCTS>
+        <PRODUCT>
+            <SHORT-NAME>EasySAR</SHORT-NAME>
+            <DESC>https://www.gkanghui.com</DESC>
+            <VERSION>1.2.0</VERSION>
+            <PRODUCTS>
+                <PRODUCT>
+                    <SHORT-NAME>NvM</SHORT-NAME>
+                    <VERSION>1.2-rc.1</VERSION>
+                </PRODUCT>
+            </PRODUCTS>
+        </PRODUCT>
+    </PRODUCTS>
+</ANGHUI>
+
