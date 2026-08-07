@@ -25,9 +25,7 @@ extern "C"{
  *====================================================================================================*/
 
 #include "LinIf.h"
-#include "Dcm_Cfg.h"
-
-
+#include "PduR_LinTp.h"
 /*====================================================================================================*
  *                                  SOURCE FILE VERSION INFORMATION
  *====================================================================================================*/
@@ -85,7 +83,7 @@ CONST(LinTp_ChannelConfigType, LINTP_CONST) LinTp_ChannelCfg[LINTP_MAX_CHANNEL_N
         /**< @brief Configures the maximum number of allowed response pending frames.
          *          Only used for LIN Master nodes, ignored for slave nodes.
          */
-        10U,
+        1U,
 
     	/**< @brief P2*max timeout when a response pending frame is expected in milliseconds.
          *          Only used for LIN Master nodes, ignored for slave nodes
@@ -135,7 +133,7 @@ CONST(LinTp_RxNSduType, LINTP_CONST) LinTp_RxNSduCfg[LINTP_MAX_RX_NSDU_NUM] =
          0,
 
          /**< @brief Reference to the global PDU.*/
-         DcmConf_DcmDslProtocolRx_LinPdu_LinTpToDcm_MasterReq_Rx,
+         PduRConf_PduRSrcPdu_LinPdu_LinTpToPduR_MasterReq_Rx,
     },
     {
         /**< @brief N_Cr timeout enable switch.*/
@@ -149,7 +147,7 @@ CONST(LinTp_RxNSduType, LINTP_CONST) LinTp_RxNSduCfg[LINTP_MAX_RX_NSDU_NUM] =
         /**< @brief The identifier of the Transport Protocol message. This ID will be
          *          used by upper layers to call LinTp_ChangeParameter.
          */
-         0U,
+         1U,
 
          /**< @brief A N-SDU transported on LIN is identified using the NAD for the specific slave.*/
          126U,
@@ -158,7 +156,7 @@ CONST(LinTp_RxNSduType, LINTP_CONST) LinTp_RxNSduCfg[LINTP_MAX_RX_NSDU_NUM] =
          0,
 
          /**< @brief Reference to the global PDU.*/
-         DcmConf_DcmDslProtocolRx_LinTp_To_PudR_Function_Rx,
+         PduRConf_PduRSrcPdu_LinPdu_LinTpToPduR_FuncReq_Rx,
     }
 };
 
@@ -198,7 +196,7 @@ CONST(LinTp_TxNSduType, LINTP_CONST) LinTp_TxNSduCfg[LINTP_MAX_TX_NSDU_NUM] =
          0,
 
          /**< @brief Reference to the global PDU.*/
-         DcmConf_DcmDslProtocolTx_LinPdu_DcmToLinTp_SlaveResp_Tx,
+         PduRConf_PduRDestPdu_LinPdu_PduRToLinTp_SlaveResp_Tx,
     }
 };
 

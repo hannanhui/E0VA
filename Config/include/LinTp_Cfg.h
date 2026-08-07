@@ -68,10 +68,10 @@ extern "C"{
 /**
  * @brief Define the identifier for the LinTp layer PDU.
  */
-#define LinTpConf_LinTpRxNSdu_LinPdu_LinTpToDcm_MasterReq_Rx         (0U)
-#define LinTpConf_LinTpRxNSdu_LinTp_To_PudR_Function_Rx         (0U)
+#define LinTpConf_LinTpRxNSdu_LinPdu_LinTpToPduR_MasterReq_Rx         (0U)
+#define LinTpConf_LinTpRxNSdu_LinPdu_LinTpToPduR_FuncReq_Rx         (1U)
 
-#define LinTpConf_LinTpTxNSdu_LinPdu_DcmToLinTp_SlaveResp_Tx         (0U)
+#define LinTpConf_LinTpTxNSdu_LinPdu_PduRToLinTp_SlaveResp_Tx         (0U)
 
 /*====================================================================================================*
  *                                         DEFINES AND MACROS

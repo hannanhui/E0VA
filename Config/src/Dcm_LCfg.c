@@ -189,15 +189,35 @@ CONST(Dcm_DsdSubServiceType, DCM_CONST)Dcm_DsdTable0Sid0x11SubService[1] =
     }
 };
 
+CONST(Dcm_DsdSubServiceType, DCM_CONST)Dcm_DsdTable0Sid0x19SubService[1] = 
+{
+    {
+        /* DcmDsdSubServiceUsed */
+        TRUE,
+        /* DcmDsdSubServiceId */
+        0x2u,
+        /* DcmDsdSubServiceSessionLevelRef */
+        0x5u,
+        /* DcmDsdSubServiceSecurityLevelRef */
+        0u,
+        /* DcmDsdSubServiceRxAddrType */
+        DCM_PHYSICAL_TYPE,
+        /* DcmDsdSubServiceP4ServerMax */
+        500u,
+        /* DcmDsdSubServiceConditionCheckFnc */
+        NULL_PTR
+    }
+};
+
 CONST(Dcm_DsdSubServiceType, DCM_CONST)Dcm_DsdTable0Sid0x27SubService[2] = 
 {
     {
         /* DcmDsdSubServiceUsed */
         TRUE,
         /* DcmDsdSubServiceId */
-        0x11u,
+        0x1u,
         /* DcmDsdSubServiceSessionLevelRef */
-        0x2u,
+        0x4u,
         /* DcmDsdSubServiceSecurityLevelRef */
         0u,
         /* DcmDsdSubServiceRxAddrType */
@@ -211,9 +231,9 @@ CONST(Dcm_DsdSubServiceType, DCM_CONST)Dcm_DsdTable0Sid0x27SubService[2] =
         /* DcmDsdSubServiceUsed */
         TRUE,
         /* DcmDsdSubServiceId */
-        0x12u,
-        /* DcmDsdSubServiceSessionLevelRef */
         0x2u,
+        /* DcmDsdSubServiceSessionLevelRef */
+        0x4u,
         /* DcmDsdSubServiceSecurityLevelRef */
         0u,
         /* DcmDsdSubServiceRxAddrType */
@@ -222,6 +242,42 @@ CONST(Dcm_DsdSubServiceType, DCM_CONST)Dcm_DsdTable0Sid0x27SubService[2] =
         50u,
         /* DcmDsdSubServiceConditionCheckFnc */
         NULL_PTR
+    }
+};
+
+CONST(Dcm_DsdSubServiceType, DCM_CONST)Dcm_DsdTable0Sid0x28SubService[2] = 
+{
+    {
+        /* DcmDsdSubServiceUsed */
+        TRUE,
+        /* DcmDsdSubServiceId */
+        0x0u,
+        /* DcmDsdSubServiceSessionLevelRef */
+        0x6u,
+        /* DcmDsdSubServiceSecurityLevelRef */
+        0u,
+        /* DcmDsdSubServiceRxAddrType */
+        DCM_FUNCTIONAL_PHYSICAL_TYPE,
+        /* DcmDsdSubServiceP4ServerMax */
+        50u,
+        /* DcmDsdSubServiceConditionCheckFnc */
+        &Dcm_UDS0x28Sub0x0ConditionCheck
+    },
+    {
+        /* DcmDsdSubServiceUsed */
+        TRUE,
+        /* DcmDsdSubServiceId */
+        0x3u,
+        /* DcmDsdSubServiceSessionLevelRef */
+        0x6u,
+        /* DcmDsdSubServiceSecurityLevelRef */
+        0u,
+        /* DcmDsdSubServiceRxAddrType */
+        DCM_FUNCTIONAL_PHYSICAL_TYPE,
+        /* DcmDsdSubServiceP4ServerMax */
+        50u,
+        /* DcmDsdSubServiceConditionCheckFnc */
+        &Dcm_UDS0x28Sub0x3ConditionCheck
     }
 };
 
@@ -265,42 +321,6 @@ CONST(Dcm_DsdSubServiceType, DCM_CONST)Dcm_DsdTable0Sid0x3ESubService[1] =
     }
 };
 
-CONST(Dcm_DsdSubServiceType, DCM_CONST)Dcm_DsdTable0Sid0x28SubService[2] = 
-{
-    {
-        /* DcmDsdSubServiceUsed */
-        TRUE,
-        /* DcmDsdSubServiceId */
-        0x0u,
-        /* DcmDsdSubServiceSessionLevelRef */
-        0x7u,
-        /* DcmDsdSubServiceSecurityLevelRef */
-        0u,
-        /* DcmDsdSubServiceRxAddrType */
-        DCM_FUNCTIONAL_PHYSICAL_TYPE,
-        /* DcmDsdSubServiceP4ServerMax */
-        0u,
-        /* DcmDsdSubServiceConditionCheckFnc */
-        NULL_PTR
-    },
-    {
-        /* DcmDsdSubServiceUsed */
-        TRUE,
-        /* DcmDsdSubServiceId */
-        0x3u,
-        /* DcmDsdSubServiceSessionLevelRef */
-        0x7u,
-        /* DcmDsdSubServiceSecurityLevelRef */
-        0u,
-        /* DcmDsdSubServiceRxAddrType */
-        DCM_FUNCTIONAL_PHYSICAL_TYPE,
-        /* DcmDsdSubServiceP4ServerMax */
-        0u,
-        /* DcmDsdSubServiceConditionCheckFnc */
-        NULL_PTR
-    }
-};
-
 CONST(Dcm_DsdSubServiceType, DCM_CONST)Dcm_DsdTable0Sid0x85SubService[2] = 
 {
     {
@@ -309,15 +329,15 @@ CONST(Dcm_DsdSubServiceType, DCM_CONST)Dcm_DsdTable0Sid0x85SubService[2] =
         /* DcmDsdSubServiceId */
         0x1u,
         /* DcmDsdSubServiceSessionLevelRef */
-        0x7u,
+        0x6u,
         /* DcmDsdSubServiceSecurityLevelRef */
         0u,
         /* DcmDsdSubServiceRxAddrType */
         DCM_FUNCTIONAL_PHYSICAL_TYPE,
         /* DcmDsdSubServiceP4ServerMax */
-        0u,
+        50u,
         /* DcmDsdSubServiceConditionCheckFnc */
-        NULL_PTR
+        &Dcm_UDS0x85Sub0x1ConditionCheck
     },
     {
         /* DcmDsdSubServiceUsed */
@@ -325,19 +345,19 @@ CONST(Dcm_DsdSubServiceType, DCM_CONST)Dcm_DsdTable0Sid0x85SubService[2] =
         /* DcmDsdSubServiceId */
         0x2u,
         /* DcmDsdSubServiceSessionLevelRef */
-        0x7u,
+        0x6u,
         /* DcmDsdSubServiceSecurityLevelRef */
         0u,
         /* DcmDsdSubServiceRxAddrType */
         DCM_FUNCTIONAL_PHYSICAL_TYPE,
         /* DcmDsdSubServiceP4ServerMax */
-        0u,
+        50u,
         /* DcmDsdSubServiceConditionCheckFnc */
-        NULL_PTR
+        &Dcm_UDS0x85Sub0x2ConditionCheck
     }
 };
 
-CONST(Dcm_DsdServiceType, DCM_CONST)Dcm_DsdServiceTable0Services[12] = 
+CONST(Dcm_DsdServiceType, DCM_CONST)Dcm_DsdServiceTable0Services[11] = 
 {
     {
         /* DcmDsdServiceUsed */
@@ -393,6 +413,54 @@ CONST(Dcm_DsdServiceType, DCM_CONST)Dcm_DsdServiceTable0Services[12] =
         /* DcmDsdSidTabSubfuncAvail */
         FALSE,
         /* DcmDsdSidTabServiceId */
+        0x14u,
+        /* DcmDsdSubServiceNum */
+        0u,
+        /* DcmDsdSidTabSessionLevelRef */
+        0x5u,
+        /* DcmDsdSidTabSecurityLevelRef */
+        0u,
+        /* DcmDsdServiceRxAddrType */
+        DCM_FUNCTIONAL_PHYSICAL_TYPE,
+        /* DcmDsdServiceP4ServerMax */
+        3500u,
+        /* DcmDsdSidTabFnc */
+        &Dcm_UDS0x14,
+        /* DcmDsdServiceConditionCheckFnc */
+        NULL_PTR,
+        /* DcmDsdSubService */
+        NULL_PTR
+    },
+    {
+        /* DcmDsdServiceUsed */
+        TRUE,
+        /* DcmDsdSidTabSubfuncAvail */
+        TRUE,
+        /* DcmDsdSidTabServiceId */
+        0x19u,
+        /* DcmDsdSubServiceNum */
+        1u,
+        /* DcmDsdSidTabSessionLevelRef */
+        0x7u,
+        /* DcmDsdSidTabSecurityLevelRef */
+        0u,
+        /* DcmDsdServiceRxAddrType */
+        DCM_PHYSICAL_TYPE,
+        /* DcmDsdServiceP4ServerMax */
+        0u,
+        /* DcmDsdSidTabFnc */
+        &Dcm_UDS0x19,
+        /* DcmDsdServiceConditionCheckFnc */
+        NULL_PTR,
+        /* DcmDsdSubService */
+        &Dcm_DsdTable0Sid0x19SubService[0]
+    },
+    {
+        /* DcmDsdServiceUsed */
+        TRUE,
+        /* DcmDsdSidTabSubfuncAvail */
+        FALSE,
+        /* DcmDsdSidTabServiceId */
         0x22u,
         /* DcmDsdSubServiceNum */
         0u,
@@ -439,13 +507,37 @@ CONST(Dcm_DsdServiceType, DCM_CONST)Dcm_DsdServiceTable0Services[12] =
         /* DcmDsdServiceUsed */
         TRUE,
         /* DcmDsdSidTabSubfuncAvail */
+        TRUE,
+        /* DcmDsdSidTabServiceId */
+        0x28u,
+        /* DcmDsdSubServiceNum */
+        2u,
+        /* DcmDsdSidTabSessionLevelRef */
+        0x7u,
+        /* DcmDsdSidTabSecurityLevelRef */
+        0u,
+        /* DcmDsdServiceRxAddrType */
+        DCM_FUNCTIONAL_PHYSICAL_TYPE,
+        /* DcmDsdServiceP4ServerMax */
+        0u,
+        /* DcmDsdSidTabFnc */
+        &Dcm_UDS0x28,
+        /* DcmDsdServiceConditionCheckFnc */
+        NULL_PTR,
+        /* DcmDsdSubService */
+        &Dcm_DsdTable0Sid0x28SubService[0]
+    },
+    {
+        /* DcmDsdServiceUsed */
+        TRUE,
+        /* DcmDsdSidTabSubfuncAvail */
         FALSE,
         /* DcmDsdSidTabServiceId */
         0x2Eu,
         /* DcmDsdSubServiceNum */
         0u,
         /* DcmDsdSidTabSessionLevelRef */
-        0x2u,
+        0x6u,
         /* DcmDsdSidTabSecurityLevelRef */
         0x1u,
         /* DcmDsdServiceRxAddrType */
@@ -511,102 +603,6 @@ CONST(Dcm_DsdServiceType, DCM_CONST)Dcm_DsdServiceTable0Services[12] =
         /* DcmDsdServiceUsed */
         TRUE,
         /* DcmDsdSidTabSubfuncAvail */
-        FALSE,
-        /* DcmDsdSidTabServiceId */
-        0x34u,
-        /* DcmDsdSubServiceNum */
-        0u,
-        /* DcmDsdSidTabSessionLevelRef */
-        0x2u,
-        /* DcmDsdSidTabSecurityLevelRef */
-        0x1u,
-        /* DcmDsdServiceRxAddrType */
-        DCM_PHYSICAL_TYPE,
-        /* DcmDsdServiceP4ServerMax */
-        0u,
-        /* DcmDsdSidTabFnc */
-        &Dcm_UDS0x34,
-        /* DcmDsdServiceConditionCheckFnc */
-        NULL_PTR,
-        /* DcmDsdSubService */
-        NULL_PTR
-    },
-    {
-        /* DcmDsdServiceUsed */
-        TRUE,
-        /* DcmDsdSidTabSubfuncAvail */
-        FALSE,
-        /* DcmDsdSidTabServiceId */
-        0x36u,
-        /* DcmDsdSubServiceNum */
-        0u,
-        /* DcmDsdSidTabSessionLevelRef */
-        0x2u,
-        /* DcmDsdSidTabSecurityLevelRef */
-        0x1u,
-        /* DcmDsdServiceRxAddrType */
-        DCM_PHYSICAL_TYPE,
-        /* DcmDsdServiceP4ServerMax */
-        0u,
-        /* DcmDsdSidTabFnc */
-        &Dcm_UDS0x36,
-        /* DcmDsdServiceConditionCheckFnc */
-        NULL_PTR,
-        /* DcmDsdSubService */
-        NULL_PTR
-    },
-    {
-        /* DcmDsdServiceUsed */
-        TRUE,
-        /* DcmDsdSidTabSubfuncAvail */
-        FALSE,
-        /* DcmDsdSidTabServiceId */
-        0x37u,
-        /* DcmDsdSubServiceNum */
-        0u,
-        /* DcmDsdSidTabSessionLevelRef */
-        0x2u,
-        /* DcmDsdSidTabSecurityLevelRef */
-        0x1u,
-        /* DcmDsdServiceRxAddrType */
-        DCM_PHYSICAL_TYPE,
-        /* DcmDsdServiceP4ServerMax */
-        0u,
-        /* DcmDsdSidTabFnc */
-        &Dcm_UDS0x37,
-        /* DcmDsdServiceConditionCheckFnc */
-        NULL_PTR,
-        /* DcmDsdSubService */
-        NULL_PTR
-    },
-    {
-        /* DcmDsdServiceUsed */
-        TRUE,
-        /* DcmDsdSidTabSubfuncAvail */
-        TRUE,
-        /* DcmDsdSidTabServiceId */
-        0x28u,
-        /* DcmDsdSubServiceNum */
-        2u,
-        /* DcmDsdSidTabSessionLevelRef */
-        0x7u,
-        /* DcmDsdSidTabSecurityLevelRef */
-        0u,
-        /* DcmDsdServiceRxAddrType */
-        DCM_FUNCTIONAL_PHYSICAL_TYPE,
-        /* DcmDsdServiceP4ServerMax */
-        0u,
-        /* DcmDsdSidTabFnc */
-        &Dcm_UDS0x28,
-        /* DcmDsdServiceConditionCheckFnc */
-        NULL_PTR,
-        /* DcmDsdSubService */
-        &Dcm_DsdTable0Sid0x28SubService[0]
-    },
-    {
-        /* DcmDsdServiceUsed */
-        TRUE,
-        /* DcmDsdSidTabSubfuncAvail */
         TRUE,
         /* DcmDsdSidTabServiceId */
         0x85u,
@@ -635,7 +631,7 @@ CONST(Dcm_DsdServiceTableType, DCM_CONST)Dcm_DsdServiceTable[1] =
         /* DcmDsdSidTabId */
         0u,
         /* DcmServiceNum */
-        12u,
+        11u,
         /* DcmDsdService */
         &Dcm_DsdServiceTable0Services[0]
     }
@@ -657,7 +653,7 @@ CONST(Dcm_DsdType, DCM_CONST)Dcm_Dsd =
 #define DCM_START_SEC_CONFIG_DATA_8
 #include "Dcm_MemMap.h"
 
-VAR(uint8, DCM_VAR)Dcm_InternalBuffer[8448] = {0};
+VAR(uint8, DCM_VAR)Dcm_InternalBuffer[8192] = {0};
 
 #define DCM_STOP_SEC_CONFIG_DATA_8
 #include "Dcm_MemMap.h"
@@ -669,15 +665,15 @@ CONST(Dcm_DslBufferType, DCM_CONST)Dcm_DslBuffer[2] =
 {
     {
         /* DcmDslBufferSize */
-        4224u,
+        4096u,
         /* DcmDslBufferRef */
         &Dcm_InternalBuffer[0]
     },
     {
         /* DcmDslBufferSize */
-        4224u,
+        4096u,
         /* DcmDslBufferRef */
-        &Dcm_InternalBuffer[4224]
+        &Dcm_InternalBuffer[4096]
     }
 };
 
@@ -689,9 +685,9 @@ CONST(Dcm_DslProtocolRxType, DCM_CONST)Dcm_DslProtocolRx[2] =
         /* DcmDslRxParentProIdx */
         0u,
         /* DcmDslProtocolRxPduRef */
-        DcmConf_DcmDslProtocolRx_LinPdu_LinTpToDcm_MasterReq_Rx,
+        PduRConf_PduRDestPdu_LinPdu_PduRToDcm_MasterReq_Rx,
         /* DcmDslProtocolRxPduId */
-        DcmConf_DcmDslProtocolRx_LinPdu_LinTpToDcm_MasterReq_Rx,
+        DcmConf_DcmDslProtocolRx_LinPdu_PduRToDcm_MasterReq_Rx,
         /* DcmDslProtocolRxAddrType */
         DCM_PHYSICAL_TYPE
     },
@@ -701,9 +697,9 @@ CONST(Dcm_DslProtocolRxType, DCM_CONST)Dcm_DslProtocolRx[2] =
         /* DcmDslRxParentProIdx */
         0u,
         /* DcmDslProtocolRxPduRef */
-        DcmConf_DcmDslProtocolRx_LinTp_To_PudR_Function_Rx,
+        PduRConf_PduRDestPdu_LinPdu_PduRToDcm_FuncReq_Rx,
         /* DcmDslProtocolRxPduId */
-        DcmConf_DcmDslProtocolRx_LinTp_To_PudR_Function_Rx,
+        DcmConf_DcmDslProtocolRx_LinPdu_PduRToDcm_FuncReq_Rx,
         /* DcmDslProtocolRxAddrType */
         DCM_FUNCTIONAL_TYPE
     }
@@ -717,9 +713,9 @@ CONST(Dcm_DslProtocolTxType, DCM_CONST)Dcm_DslProtocolTx[1] =
         /* DcmDslTxParentProIdx */
         0u,
         /* DcmDslProtocolTxPduRef */
-        DcmConf_DcmDslProtocolTx_LinPdu_DcmToLinTp_SlaveResp_Tx,
+        PduRConf_PduRSrcPdu_LinPdu_DcmToPduR_SlaveResp_Tx,
         /* DcmDslTxConfirmationPduId */
-        DcmConf_DcmDslProtocolTx_LinPdu_DcmToLinTp_SlaveResp_Tx
+        DcmConf_DcmDslProtocolTx_LinPdu_DcmToPduR_SlaveResp_Tx
     }
 };
 
@@ -753,11 +749,11 @@ CONST(Dcm_DslProtocolRowType, DCM_CONST)Dcm_DslProtocolRow[1] =
         /* DcmDslProtocolID */
         DCM_UDS_ON_CAN,
         /* DcmDslProtocolRxBufferRef */
-        &Dcm_DslBuffer[1],
+        &Dcm_DslBuffer[0],
         /* DcmDslProtocolSIDTable */
         &Dcm_DsdServiceTable[0],
         /* DcmDslProtocolTxBufferRef */
-        &Dcm_DslBuffer[0]
+        &Dcm_DslBuffer[1]
     }
 };
 
@@ -767,6 +763,12 @@ CONST(Dcm_DslType, DCM_CONST)Dcm_Dsl =
     &Dcm_DslBuffer[0],
     /* DcmDslProtocolRow */
     &Dcm_DslProtocolRow[0]
+};
+
+CONST(Dcm_DspClearDTCType, DCM_CONST)Dcm_DspClearDTC = 
+{
+    /* Dcm_DspClearDTCCheckFncType */
+    NULL_PTR
 };
 
 CONST(Dcm_DspComControlAllChannelType, DCM_CONST)Dcm_DspComControlAllChannel[1] = 
@@ -779,17 +781,37 @@ CONST(Dcm_DspComControlAllChannelType, DCM_CONST)Dcm_DspComControlAllChannel[1] 
     }
 };
 
+CONST(Dcm_DspComControlSpecificChannelType, DCM_CONST)Dcm_DspComControlSpecificChannel[1] = 
+{
+    {
+        /* DcmDspComControlSpecificChannelUsed */
+        TRUE,
+        /* DcmDspSubnetNumber */
+        5u,
+        /* DcmDspSpecificComMChannelRef */
+        0u
+    }
+};
+
 CONST(Dcm_DspComControlType, DCM_CONST)Dcm_DspComControl = 
 {
     /* DcmDspComControlAllChannel */
-    &Dcm_DspComControlAllChannel[0]
+    &Dcm_DspComControlAllChannel[0],
+    /* DcmDspComControlSpecificChannel */
+    &Dcm_DspComControlSpecificChannel[0]
 };
 
-CONST(Dcm_DspCommonAuthorizationType, DCM_CONST)Dcm_DspCommonAuthorization[1] = 
+CONST(Dcm_DspCommonAuthorizationType, DCM_CONST)Dcm_DspCommonAuthorization[2] = 
 {
     {
         /* DcmDspCommonAuthorizationSessionRef */
-        0x2u,
+        0x4u,
+        /* DcmDspCommonAuthorizationSecurityLevelRef */
+        0u
+    },
+    {
+        /* DcmDspCommonAuthorizationSessionRef */
+        0x4u,
         /* DcmDspCommonAuthorizationSecurityLevelRef */
         0x1u
     }
@@ -811,19 +833,25 @@ VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF180[32] = {0};
 
 VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF187[16] = {0};
 
+VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF189[24] = {0};
+
 VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF089[24] = {0};
+
+VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF013[16] = {0};
 
 VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF18A[10] = {0};
 
+VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF18C[47] = {0};
+
 VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF186[1] = {0};
 
-VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF184[19] = {0};
+VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF184[18] = {0};
 
-VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF0F1[4] = {0};
+VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF0F1[18] = {0};
 
-VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF0F3[4] = {0};
+VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF0F3[18] = {0};
 
-VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF160[1] = {0};
+VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF160[18] = {0};
 
 #define DCM_STOP_SEC_CONFIG_DATA_8
 #include "Dcm_MemMap.h"
@@ -831,7 +859,7 @@ VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF160[1] = {0};
 #define DCM_START_SEC_CONFIG_DATA_UNSPECIFIED
 #include "Dcm_MemMap.h"
 
-CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] = 
+CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[12] = 
 {
     {
         /* DcmDspDataConditionCheckReadFncUsed */
@@ -848,8 +876,6 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         &DcmDspDataConditionCheckRead_0xF180,
         /* DcmDspDataReadFnc */
         &DcmDspDataRead_0xF180,
-        /* DcmDspDataWriteFnc */
-        NULL_PTR,
         /* DcmDspDataInternalBuffer */
         &Dcm_DspDataInternalBuffer_DcmDspData_0xF180[0]
     },
@@ -868,10 +894,26 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         &DcmDspDataConditionCheckRead_0xF187,
         /* DcmDspDataReadFnc */
         &DcmDspDataRead_0xF187,
-        /* DcmDspDataWriteFnc */
-        NULL_PTR,
         /* DcmDspDataInternalBuffer */
         &Dcm_DspDataInternalBuffer_DcmDspData_0xF187[0]
+    },
+    {
+        /* DcmDspDataConditionCheckReadFncUsed */
+        TRUE,
+        /* DcmDspDataSize */
+        192u,
+        /* DcmDspDataEndianness */
+        DCM_OPAQUE,
+        /* DcmDspDataType */
+        DCM_UINT8_N,
+        /* DcmDspDataUsePort */
+        DCM_USE_DATA_SYNCH_FNC,
+        /* DcmDspDataConditionCheckReadFnc */
+        &DcmDspDataConditionCheckRead_0xF189,
+        /* DcmDspDataReadFnc */
+        &DcmDspDataRead_0xF189,
+        /* DcmDspDataInternalBuffer */
+        &Dcm_DspDataInternalBuffer_DcmDspData_0xF189[0]
     },
     {
         /* DcmDspDataConditionCheckReadFncUsed */
@@ -888,10 +930,26 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         &DcmDspDataConditionCheckRead_0xF089,
         /* DcmDspDataReadFnc */
         &DcmDspDataRead_0xF089,
-        /* DcmDspDataWriteFnc */
-        NULL_PTR,
         /* DcmDspDataInternalBuffer */
         &Dcm_DspDataInternalBuffer_DcmDspData_0xF089[0]
+    },
+    {
+        /* DcmDspDataConditionCheckReadFncUsed */
+        TRUE,
+        /* DcmDspDataSize */
+        128u,
+        /* DcmDspDataEndianness */
+        DCM_OPAQUE,
+        /* DcmDspDataType */
+        DCM_UINT8_N,
+        /* DcmDspDataUsePort */
+        DCM_USE_DATA_SYNCH_FNC,
+        /* DcmDspDataConditionCheckReadFnc */
+        &DcmDspDataConditionCheckRead_0xF013,
+        /* DcmDspDataReadFnc */
+        &DcmDspDataRead_0xF013,
+        /* DcmDspDataInternalBuffer */
+        &Dcm_DspDataInternalBuffer_DcmDspData_0xF013[0]
     },
     {
         /* DcmDspDataConditionCheckReadFncUsed */
@@ -908,10 +966,26 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         &DcmDspDataConditionCheckRead_0xF18A,
         /* DcmDspDataReadFnc */
         &DcmDspDataRead_0xF18A,
-        /* DcmDspDataWriteFnc */
-        NULL_PTR,
         /* DcmDspDataInternalBuffer */
         &Dcm_DspDataInternalBuffer_DcmDspData_0xF18A[0]
+    },
+    {
+        /* DcmDspDataConditionCheckReadFncUsed */
+        TRUE,
+        /* DcmDspDataSize */
+        376u,
+        /* DcmDspDataEndianness */
+        DCM_OPAQUE,
+        /* DcmDspDataType */
+        DCM_UINT8_N,
+        /* DcmDspDataUsePort */
+        DCM_USE_DATA_SYNCH_FNC,
+        /* DcmDspDataConditionCheckReadFnc */
+        &DcmDspDataConditionCheckRead_0xF18C,
+        /* DcmDspDataReadFnc */
+        &DcmDspDataRead_0xF18C,
+        /* DcmDspDataInternalBuffer */
+        &Dcm_DspDataInternalBuffer_DcmDspData_0xF18C[0]
     },
     {
         /* DcmDspDataConditionCheckReadFncUsed */
@@ -928,8 +1002,6 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         &DcmDspDataConditionCheckRead_0xF186,
         /* DcmDspDataReadFnc */
         &DcmDspDataRead_0xF186,
-        /* DcmDspDataWriteFnc */
-        NULL_PTR,
         /* DcmDspDataInternalBuffer */
         &Dcm_DspDataInternalBuffer_DcmDspData_0xF186[0]
     },
@@ -937,7 +1009,7 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         /* DcmDspDataConditionCheckReadFncUsed */
         TRUE,
         /* DcmDspDataSize */
-        152u,
+        144u,
         /* DcmDspDataEndianness */
         DCM_OPAQUE,
         /* DcmDspDataType */
@@ -948,8 +1020,6 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         &DcmDspDataConditionCheckRead_0xF184,
         /* DcmDspDataReadFnc */
         &DcmDspDataRead_0xF184,
-        /* DcmDspDataWriteFnc */
-        &DcmDspDataWrite_0xF184,
         /* DcmDspDataInternalBuffer */
         &Dcm_DspDataInternalBuffer_DcmDspData_0xF184[0]
     },
@@ -957,7 +1027,7 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         /* DcmDspDataConditionCheckReadFncUsed */
         TRUE,
         /* DcmDspDataSize */
-        32u,
+        144u,
         /* DcmDspDataEndianness */
         DCM_OPAQUE,
         /* DcmDspDataType */
@@ -968,8 +1038,6 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         &DcmDspDataConditionCheckRead_0xF0F1,
         /* DcmDspDataReadFnc */
         &DcmDspDataRead_0xF0F1,
-        /* DcmDspDataWriteFnc */
-        NULL_PTR,
         /* DcmDspDataInternalBuffer */
         &Dcm_DspDataInternalBuffer_DcmDspData_0xF0F1[0]
     },
@@ -977,7 +1045,7 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         /* DcmDspDataConditionCheckReadFncUsed */
         TRUE,
         /* DcmDspDataSize */
-        32u,
+        144u,
         /* DcmDspDataEndianness */
         DCM_OPAQUE,
         /* DcmDspDataType */
@@ -988,8 +1056,6 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         &DcmDspDataConditionCheckRead_0xF0F3,
         /* DcmDspDataReadFnc */
         &DcmDspDataRead_0xF0F3,
-        /* DcmDspDataWriteFnc */
-        NULL_PTR,
         /* DcmDspDataInternalBuffer */
         &Dcm_DspDataInternalBuffer_DcmDspData_0xF0F3[0]
     },
@@ -997,7 +1063,7 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         /* DcmDspDataConditionCheckReadFncUsed */
         TRUE,
         /* DcmDspDataSize */
-        8u,
+        144u,
         /* DcmDspDataEndianness */
         DCM_OPAQUE,
         /* DcmDspDataType */
@@ -1008,8 +1074,6 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
         &DcmDspDataConditionCheckRead_0xF160,
         /* DcmDspDataReadFnc */
         &DcmDspDataRead_0xF160,
-        /* DcmDspDataWriteFnc */
-        NULL_PTR,
         /* DcmDspDataInternalBuffer */
         &Dcm_DspDataInternalBuffer_DcmDspData_0xF160[0]
     }
@@ -1021,7 +1085,7 @@ CONST(Dcm_DspDataType, DCM_CONST)Dcm_DspData[9] =
 #define DCM_START_SEC_CONFIG_DATA_UNSPECIFIED
 #include "Dcm_MemMap.h"
 
-CONST(Dcm_DspDidReadType, DCM_CONST)Dcm_DspDidRead[9] = 
+CONST(Dcm_DspDidReadType, DCM_CONST)Dcm_DspDidRead[12] = 
 {
     {
         /* DcmDspDidReadSessionRef */
@@ -1037,13 +1101,31 @@ CONST(Dcm_DspDidReadType, DCM_CONST)Dcm_DspDidRead[9] =
     },
     {
         /* DcmDspDidReadSessionRef */
-        0x7u,
+        0x5u,
         /* DcmDspDidReadSecurityLevelRef */
         0u
     },
     {
         /* DcmDspDidReadSessionRef */
         0x7u,
+        /* DcmDspDidReadSecurityLevelRef */
+        0u
+    },
+    {
+        /* DcmDspDidReadSessionRef */
+        0x5u,
+        /* DcmDspDidReadSecurityLevelRef */
+        0u
+    },
+    {
+        /* DcmDspDidReadSessionRef */
+        0x7u,
+        /* DcmDspDidReadSecurityLevelRef */
+        0u
+    },
+    {
+        /* DcmDspDidReadSessionRef */
+        0x5u,
         /* DcmDspDidReadSecurityLevelRef */
         0u
     },
@@ -1079,17 +1161,7 @@ CONST(Dcm_DspDidReadType, DCM_CONST)Dcm_DspDidRead[9] =
     }
 };
 
-CONST(Dcm_DspDidWriteType, DCM_CONST)Dcm_DspDidWrite[1] = 
-{
-    {
-        /* DcmDspDidWriteSessionRef */
-        0x2u,
-        /* DcmDspDidWriteSecurityLevelRef */
-        0x1u
-    }
-};
-
-CONST(Dcm_DspDidInfoType, DCM_CONST)Dcm_DspDidInfo[9] = 
+CONST(Dcm_DspDidInfoType, DCM_CONST)Dcm_DspDidInfo[12] = 
 {
     {
         /* DcmDspDidRead */
@@ -1125,7 +1197,7 @@ CONST(Dcm_DspDidInfoType, DCM_CONST)Dcm_DspDidInfo[9] =
         /* DcmDspDidRead */
         &Dcm_DspDidRead[5],
         /* DcmDspDidWrite */
-        &Dcm_DspDidWrite[0]
+        NULL_PTR
     },
     {
         /* DcmDspDidRead */
@@ -1144,6 +1216,24 @@ CONST(Dcm_DspDidInfoType, DCM_CONST)Dcm_DspDidInfo[9] =
         &Dcm_DspDidRead[8],
         /* DcmDspDidWrite */
         NULL_PTR
+    },
+    {
+        /* DcmDspDidRead */
+        &Dcm_DspDidRead[9],
+        /* DcmDspDidWrite */
+        NULL_PTR
+    },
+    {
+        /* DcmDspDidRead */
+        &Dcm_DspDidRead[10],
+        /* DcmDspDidWrite */
+        NULL_PTR
+    },
+    {
+        /* DcmDspDidRead */
+        &Dcm_DspDidRead[11],
+        /* DcmDspDidWrite */
+        NULL_PTR
     }
 };
 
@@ -1153,7 +1243,7 @@ CONST(Dcm_DspDidInfoType, DCM_CONST)Dcm_DspDidInfo[9] =
 #define DCM_START_SEC_CONFIG_DATA_UNSPECIFIED
 #include "Dcm_MemMap.h"
 
-CONST(Dcm_DspDidSignalType, DCM_CONST)Dcm_DspDidSignal[9] = 
+CONST(Dcm_DspDidSignalType, DCM_CONST)Dcm_DspDidSignal[12] = 
 {
     {
         /* DcmDspDidDataPos */
@@ -1208,10 +1298,28 @@ CONST(Dcm_DspDidSignalType, DCM_CONST)Dcm_DspDidSignal[9] =
         0u,
         /* DcmDspDidDataRef */
         &Dcm_DspData[8]
+    },
+    {
+        /* DcmDspDidDataPos */
+        0u,
+        /* DcmDspDidDataRef */
+        &Dcm_DspData[9]
+    },
+    {
+        /* DcmDspDidDataPos */
+        0u,
+        /* DcmDspDidDataRef */
+        &Dcm_DspData[10]
+    },
+    {
+        /* DcmDspDidDataPos */
+        0u,
+        /* DcmDspDidDataRef */
+        &Dcm_DspData[11]
     }
 };
 
-CONST(Dcm_DspDidType, DCM_CONST)Dcm_DspDid[9] = 
+CONST(Dcm_DspDidType, DCM_CONST)Dcm_DspDid[12] = 
 {
     {
         /* DcmDspDidUsed */
@@ -1243,7 +1351,7 @@ CONST(Dcm_DspDidType, DCM_CONST)Dcm_DspDid[9] =
         /* DcmDspDidSignalNum */
         1u,
         /* DcmDspDidIdentifier */
-        0xF089u,
+        0xF189u,
         /* DcmDspDidInfoRef */
         &Dcm_DspDidInfo[2],
         /* DcmDspDidSignal */
@@ -1255,7 +1363,7 @@ CONST(Dcm_DspDidType, DCM_CONST)Dcm_DspDid[9] =
         /* DcmDspDidSignalNum */
         1u,
         /* DcmDspDidIdentifier */
-        0xF18Au,
+        0xF089u,
         /* DcmDspDidInfoRef */
         &Dcm_DspDidInfo[3],
         /* DcmDspDidSignal */
@@ -1267,7 +1375,7 @@ CONST(Dcm_DspDidType, DCM_CONST)Dcm_DspDid[9] =
         /* DcmDspDidSignalNum */
         1u,
         /* DcmDspDidIdentifier */
-        0xF186u,
+        0xF013u,
         /* DcmDspDidInfoRef */
         &Dcm_DspDidInfo[4],
         /* DcmDspDidSignal */
@@ -1279,7 +1387,7 @@ CONST(Dcm_DspDidType, DCM_CONST)Dcm_DspDid[9] =
         /* DcmDspDidSignalNum */
         1u,
         /* DcmDspDidIdentifier */
-        0xF184u,
+        0xF18Au,
         /* DcmDspDidInfoRef */
         &Dcm_DspDidInfo[5],
         /* DcmDspDidSignal */
@@ -1291,7 +1399,7 @@ CONST(Dcm_DspDidType, DCM_CONST)Dcm_DspDid[9] =
         /* DcmDspDidSignalNum */
         1u,
         /* DcmDspDidIdentifier */
-        0xF0F1u,
+        0xF18Cu,
         /* DcmDspDidInfoRef */
         &Dcm_DspDidInfo[6],
         /* DcmDspDidSignal */
@@ -1303,7 +1411,7 @@ CONST(Dcm_DspDidType, DCM_CONST)Dcm_DspDid[9] =
         /* DcmDspDidSignalNum */
         1u,
         /* DcmDspDidIdentifier */
-        0xF0F3u,
+        0xF186u,
         /* DcmDspDidInfoRef */
         &Dcm_DspDidInfo[7],
         /* DcmDspDidSignal */
@@ -1315,11 +1423,47 @@ CONST(Dcm_DspDidType, DCM_CONST)Dcm_DspDid[9] =
         /* DcmDspDidSignalNum */
         1u,
         /* DcmDspDidIdentifier */
-        0xF160u,
+        0xF184u,
         /* DcmDspDidInfoRef */
         &Dcm_DspDidInfo[8],
         /* DcmDspDidSignal */
         &Dcm_DspDidSignal[8]
+    },
+    {
+        /* DcmDspDidUsed */
+        TRUE,
+        /* DcmDspDidSignalNum */
+        1u,
+        /* DcmDspDidIdentifier */
+        0xF0F1u,
+        /* DcmDspDidInfoRef */
+        &Dcm_DspDidInfo[9],
+        /* DcmDspDidSignal */
+        &Dcm_DspDidSignal[9]
+    },
+    {
+        /* DcmDspDidUsed */
+        TRUE,
+        /* DcmDspDidSignalNum */
+        1u,
+        /* DcmDspDidIdentifier */
+        0xF0F3u,
+        /* DcmDspDidInfoRef */
+        &Dcm_DspDidInfo[10],
+        /* DcmDspDidSignal */
+        &Dcm_DspDidSignal[10]
+    },
+    {
+        /* DcmDspDidUsed */
+        TRUE,
+        /* DcmDspDidSignalNum */
+        1u,
+        /* DcmDspDidIdentifier */
+        0xF160u,
+        /* DcmDspDidInfoRef */
+        &Dcm_DspDidInfo[11],
+        /* DcmDspDidSignal */
+        &Dcm_DspDidSignal[11]
     }
 };
 
@@ -1329,71 +1473,27 @@ CONST(Dcm_DspDidType, DCM_CONST)Dcm_DspDid[9] =
 #define DCM_START_SEC_CONFIG_DATA_UNSPECIFIED
 #include "Dcm_MemMap.h"
 
-CONST(Dcm_DspReadMemoryRangeInfoType, DCM_CONST)Dcm_DspReadMemoryRangeInfo[2] = 
+CONST(Dcm_DspReadMemoryRangeInfoType, DCM_CONST)Dcm_DspReadMemoryRangeInfo[1] = 
 {
     {
         /* DcmDspReadMemoryRangeSecurityLevelRef */
         0x1u,
         /* DcmDspReadMemoryRangeLow */
-        0x10000u,
+        0x0u,
         /* DcmDspReadMemoryRangeHigh */
-        0x7D000u
-    },
-    {
-        /* DcmDspReadMemoryRangeSecurityLevelRef */
-        0x1u,
-        /* DcmDspReadMemoryRangeLow */
-        0x20007B00u,
-        /* DcmDspReadMemoryRangeHigh */
-        0x20007F00u
+        0x80000u
     }
 };
 
-CONST(Dcm_DspWriteMemoryRangeInfoType, DCM_CONST)Dcm_DspWriteMemoryRangeInfo[2] = 
-{
-    {
-        /* DcmDspWriteMemoryRangeSecurityLevelRef */
-        0x1u,
-        /* DcmDspWriteMemoryRangeLow */
-        0x10000u,
-        /* DcmDspWriteMemoryRangeHigh */
-        0x7D000u
-    },
-    {
-        /* DcmDspWriteMemoryRangeSecurityLevelRef */
-        0x1u,
-        /* DcmDspWriteMemoryRangeLow */
-        0x20007B00u,
-        /* DcmDspWriteMemoryRangeHigh */
-        0x20007F00u
-    }
-};
-
-CONST(Dcm_DspMemoryIdInfoType, DCM_CONST)Dcm_DspMemoryIdInfo[2] =
+CONST(Dcm_DspMemoryIdInfoType, DCM_CONST)Dcm_DspMemoryIdInfo[1] =
 {
     {
         /* DcmDspMemoryIdValue */
         00u,
         /* DcmDspReadMemoryRangeInfoNum */
         1u,
-        /* DcmDspWriteMemoryRangeInfoNum */
-        1u,
         /* DcmDspReadMemoryRangeInfo */
-        &Dcm_DspReadMemoryRangeInfo[0],
-        /* DcmDspWriteMemoryRangeInfo */
-        &Dcm_DspWriteMemoryRangeInfo[0]
-    },
-    {
-        /* DcmDspMemoryIdValue */
-        32u,
-        /* DcmDspReadMemoryRangeInfoNum */
-        1u,
-        /* DcmDspWriteMemoryRangeInfoNum */
-        1u,
-        /* DcmDspReadMemoryRangeInfo */
-        &Dcm_DspReadMemoryRangeInfo[1],
-        /* DcmDspWriteMemoryRangeInfo */
-        &Dcm_DspWriteMemoryRangeInfo[1]
+        &Dcm_DspReadMemoryRangeInfo[0]
     }
 };
 
@@ -1409,72 +1509,8 @@ CONST(Dcm_DspMemoryType, DCM_CONST)Dcm_DspMemory =
 #define DCM_START_SEC_CONFIG_DATA_UNSPECIFIED
 #include "Dcm_MemMap.h"
 
-CONST(Dcm_DspRoutineSignalType, DCM_CONST)Dcm_DspRoutineInSignal[2] = 
+CONST(Dcm_DspRoutineSignalType, DCM_CONST)Dcm_DspRoutineOutSignal[1] = 
 {
-    {
-        /* DcmDspRoutineSignalLength */
-        72u,
-        /* DcmDspRoutineSignalPos */
-        0u,
-        /* DcmDspRoutineSignalEndianness */
-        DCM_OPAQUE,
-        /* DcmDspRoutineSignalType */
-        DCM_UINT8_DYN
-    },
-    {
-        /* DcmDspRoutineSignalLength */
-        3072u,
-        /* DcmDspRoutineSignalPos */
-        0u,
-        /* DcmDspRoutineSignalEndianness */
-        DCM_OPAQUE,
-        /* DcmDspRoutineSignalType */
-        DCM_UINT8_DYN
-    }
-};
-
-CONST(Dcm_DspRoutineSignalType, DCM_CONST)Dcm_DspRoutineOutSignal[5] = 
-{
-    {
-        /* DcmDspRoutineSignalLength */
-        16u,
-        /* DcmDspRoutineSignalPos */
-        0u,
-        /* DcmDspRoutineSignalEndianness */
-        DCM_OPAQUE,
-        /* DcmDspRoutineSignalType */
-        DCM_UINT8_DYN
-    },
-    {
-        /* DcmDspRoutineSignalLength */
-        8u,
-        /* DcmDspRoutineSignalPos */
-        0u,
-        /* DcmDspRoutineSignalEndianness */
-        DCM_OPAQUE,
-        /* DcmDspRoutineSignalType */
-        DCM_UINT8_DYN
-    },
-    {
-        /* DcmDspRoutineSignalLength */
-        8u,
-        /* DcmDspRoutineSignalPos */
-        0u,
-        /* DcmDspRoutineSignalEndianness */
-        DCM_OPAQUE,
-        /* DcmDspRoutineSignalType */
-        DCM_UINT8_DYN
-    },
-    {
-        /* DcmDspRoutineSignalLength */
-        8u,
-        /* DcmDspRoutineSignalPos */
-        0u,
-        /* DcmDspRoutineSignalEndianness */
-        DCM_OPAQUE,
-        /* DcmDspRoutineSignalType */
-        DCM_UINT8_DYN
-    },
     {
         /* DcmDspRoutineSignalLength */
         8u,
@@ -1487,141 +1523,33 @@ CONST(Dcm_DspRoutineSignalType, DCM_CONST)Dcm_DspRoutineOutSignal[5] =
     }
 };
 
-CONST(Dcm_DspStartRoutineType, DCM_CONST)Dcm_DspStartRoutine[5] = 
+CONST(Dcm_DspStartRoutineType, DCM_CONST)Dcm_DspStartRoutine[1] = 
 {
     {
-        /* DcmDspStartRoutineInSignalNum */
-        0u,
         /* DcmDspStartRoutineOutSignalNum */
         1u,
         /* DcmDspStartRoutineFnc */
-        &DcmDspStartRoutine_0x0203,
+        &StartRoutine_0x203_CheckProgrammingPreconditions,
         /* DcmDspStartRoutineCommonAuthorizationRef */
-        NULL_PTR,
-        /* DcmDspStartRoutineInSignal */
-        NULL_PTR,
+        &Dcm_DspCommonAuthorization[0],
         /* DcmDspStartRoutineOutSignal */
         &Dcm_DspRoutineOutSignal[0],
-    },
-    {
-        /* DcmDspStartRoutineInSignalNum */
-        1u,
-        /* DcmDspStartRoutineOutSignalNum */
-        1u,
-        /* DcmDspStartRoutineFnc */
-        &DcmDspStartRoutine_0xFF00_EraseMemory,
-        /* DcmDspStartRoutineCommonAuthorizationRef */
-        &Dcm_DspCommonAuthorization[0],
-        /* DcmDspStartRoutineInSignal */
-        &Dcm_DspRoutineInSignal[0],
-        /* DcmDspStartRoutineOutSignal */
-        &Dcm_DspRoutineOutSignal[1],
-    },
-    {
-        /* DcmDspStartRoutineInSignalNum */
-        0u,
-        /* DcmDspStartRoutineOutSignalNum */
-        1u,
-        /* DcmDspStartRoutineFnc */
-        &DcmDspStartRoutine_0xFF01_checkProgrammingDependencies,
-        /* DcmDspStartRoutineCommonAuthorizationRef */
-        &Dcm_DspCommonAuthorization[0],
-        /* DcmDspStartRoutineInSignal */
-        NULL_PTR,
-        /* DcmDspStartRoutineOutSignal */
-        &Dcm_DspRoutineOutSignal[2],
-    },
-    {
-        /* DcmDspStartRoutineInSignalNum */
-        0u,
-        /* DcmDspStartRoutineOutSignalNum */
-        1u,
-        /* DcmDspStartRoutineFnc */
-        &DcmDspStartRoutine_0xDD01_StayInBoot,
-        /* DcmDspStartRoutineCommonAuthorizationRef */
-        NULL_PTR,
-        /* DcmDspStartRoutineInSignal */
-        NULL_PTR,
-        /* DcmDspStartRoutineOutSignal */
-        &Dcm_DspRoutineOutSignal[3],
-    },
-    {
-        /* DcmDspStartRoutineInSignalNum */
-        1u,
-        /* DcmDspStartRoutineOutSignalNum */
-        1u,
-        /* DcmDspStartRoutineFnc */
-        &DcmDspStartRoutine_0xDD02_SecuritySignatureVerification,
-        /* DcmDspStartRoutineCommonAuthorizationRef */
-        &Dcm_DspCommonAuthorization[0],
-        /* DcmDspStartRoutineInSignal */
-        &Dcm_DspRoutineInSignal[1],
-        /* DcmDspStartRoutineOutSignal */
-        &Dcm_DspRoutineOutSignal[4],
     }
 };
 
-CONST(Dcm_DspRoutineType, DCM_CONST)Dcm_DspRoutine[5] = 
+CONST(Dcm_DspRoutineType, DCM_CONST)Dcm_DspRoutine[1] = 
 {
     {
         /* DcmDspRoutineUsed */
         TRUE,
         /* DcmDspRoutineUsePort */
-        FALSE,
+        TRUE,
         /* DcmDspRoutineIdentifier */
         0x203u,
         /* DcmDspCommonAuthorizationRef */
-        NULL_PTR,
+        &Dcm_DspCommonAuthorization[0],
         /* DcmDspStartRoutine */
         &Dcm_DspStartRoutine[0],
-    },
-    {
-        /* DcmDspRoutineUsed */
-        TRUE,
-        /* DcmDspRoutineUsePort */
-        FALSE,
-        /* DcmDspRoutineIdentifier */
-        0xFF00u,
-        /* DcmDspCommonAuthorizationRef */
-        &Dcm_DspCommonAuthorization[0],
-        /* DcmDspStartRoutine */
-        &Dcm_DspStartRoutine[1],
-    },
-    {
-        /* DcmDspRoutineUsed */
-        TRUE,
-        /* DcmDspRoutineUsePort */
-        FALSE,
-        /* DcmDspRoutineIdentifier */
-        0xFF01u,
-        /* DcmDspCommonAuthorizationRef */
-        &Dcm_DspCommonAuthorization[0],
-        /* DcmDspStartRoutine */
-        &Dcm_DspStartRoutine[2],
-    },
-    {
-        /* DcmDspRoutineUsed */
-        TRUE,
-        /* DcmDspRoutineUsePort */
-        FALSE,
-        /* DcmDspRoutineIdentifier */
-        0xDD01u,
-        /* DcmDspCommonAuthorizationRef */
-        NULL_PTR,
-        /* DcmDspStartRoutine */
-        &Dcm_DspStartRoutine[3],
-    },
-    {
-        /* DcmDspRoutineUsed */
-        TRUE,
-        /* DcmDspRoutineUsePort */
-        FALSE,
-        /* DcmDspRoutineIdentifier */
-        0xDD02u,
-        /* DcmDspCommonAuthorizationRef */
-        &Dcm_DspCommonAuthorization[0],
-        /* DcmDspStartRoutine */
-        &Dcm_DspStartRoutine[4],
     }
 };
 
@@ -1635,7 +1563,7 @@ CONST(Dcm_DspSecurityRowType, DCM_CONST)Dcm_DspSecurityRow[1] =
 {
     {
         /* DcmDspSecurityLevel */
-        9u,
+        1u,
         /* DcmDspSecurityNumAttDelay */
         2u,
         /* DcmDspSecurityADRSize */
@@ -1651,9 +1579,9 @@ CONST(Dcm_DspSecurityRowType, DCM_CONST)Dcm_DspSecurityRow[1] =
         /* DcmDspSecurityUsePort */
         DCM_USE_DATA_ASYNCH_FNC,
         /* DcmDspSecurityCompareKeyFnc */
-        DcmDspSecurityCompareKey_Level_FBL,
+        DcmDspSecurityCompareKey_Level_1,
         /* DcmDspSecurityGetSeedFnc */
-        DcmDspSecurityGetSeed_Level_FBL
+        DcmDspSecurityGetSeed_Level_1
     }
 };
 
@@ -1685,7 +1613,7 @@ CONST(Dcm_DspSessionRowType, DCM_CONST)Dcm_DspSessionRow[3] =
         /* DcmDspSessionP2PendingThreshold */
         30u,
         /* DcmDspSessionForBoot */
-        DCM_NO_BOOT,
+        DCM_SYS_BOOT_RESPAPP,
         /* DcmDspSessionP2StarServerMax */
         2000u,
     },
@@ -1711,6 +1639,8 @@ CONST(Dcm_DspSessionRowType, DCM_CONST)Dcm_DspSessionRow[3] =
 
 CONST(Dcm_DspType, DCM_CONST)Dcm_Dsp = 
 {
+    /* DcmDspClearDTC */
+    &Dcm_DspClearDTC,
     /* DcmDspComControl */
     &Dcm_DspComControl,
     /* DcmDspCommonAuthorization */

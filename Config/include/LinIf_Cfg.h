@@ -63,14 +63,18 @@ extern "C"{
 /**
  * @brief Total number of frames configured for the slave node channel.
  */
-#define LINIF_MAX_SLAVE_NODE_FRAME_NUM          (2U)
+#define LINIF_MAX_SLAVE_NODE_FRAME_NUM          (6U)
 
 /**
  * @brief Define the identifier for the LinIf layer PDU.
  */
-#define LinIfConf_LinIfTxPdu_LinIfTxPdu_Dcm_LinTp_SlaveResp_Tx         (61U)
+#define LinIfConf_LinIfTxPdu_LinPdu_PduRToLinIf_DSMM_1_Tx         (0U)
+#define LinIfConf_LinIfTxPdu_LinPdu_PduRToLinTp_SlaveResp_Tx         (0U)
 
-#define LinIfConf_LinIfRxPdu_LinIfRxPdu_LinTp_Dcm_MasterReq_Rx         (0U)
+#define LinIfConf_LinIfRxPdu_LinPdu_LinIfToPduR_ZCU_SMM_1_Rx         (1U)
+#define LinIfConf_LinIfRxPdu_LinPdu_LinIfToPduR_ZCU_SMM_2_Rx         (2U)
+#define LinIfConf_LinIfRxPdu_LinPdu_LinTpToPduR_MasterReq_Rx         (3U)
+#define LinIfConf_LinIfRxPdu_LinPdu_LinTpToPduR_FuncReq_Rx         (5U)
 
 /**
  *  @brief Define LinIf Slave Channel Identifier.
@@ -145,7 +149,7 @@ extern "C"{
 /**
  * @brief The response_error signal,switch
  */
-#define LINIF_SLAVE_RESPONSE_ERROR_SIGNAL        (STD_OFF)
+#define LINIF_SLAVE_RESPONSE_ERROR_SIGNAL        (STD_ON)
 
 /*====================================================================================================*
  *                                               ENUMS

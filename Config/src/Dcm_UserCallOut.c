@@ -29,14 +29,13 @@ extern "C"{
  *====================================================================================================*/
 #include "Dcm_UserCallOut.h"
 #include "Dcm_Externals.h"
-#include "FBL.h"
-#include "flash_drv.h"
-#include "aes128.h"
 #include <time.h>
 #include <stdlib.h>
-#include "eep_emulation.h"
 #include "Dcm_Internal.h"
+#include "ee_config.h"
+#include "eep_emulation.h"
 #include "trng.h"
+#include "aes128.h"
 /*====================================================================================================*
  *                                  SOURCE FILE VERSION INFORMATION
  *====================================================================================================*/
@@ -135,25 +134,6 @@ extern "C"{
 #define DCM_START_SEC_VAR_NO_INIT_8
 #include "Dcm_MemMap.h"
 
-uint8 PartNumber[16] = {
-		'4', '0', '2', '0', '8', '2', '0', '1', '4', 'A', 'A', 0x20u, 0x20u, 0x20u, 0x20u, 0x20u
-};
-
-uint8 VendorCode[10] = {
-		'8', 'K', 'C', 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u
-};
-
-uint8 HardVersionNumber[24] = {
-		'0', '.', '0', '.', '1', 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u,
-        0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u
-};
-
-uint8 BootVersionNumber[32] = {
-		'0', '1', '.', '0', '0', '.', '0', '0', 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u,
-    0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u
-};
-
-uint32 DependecyCheckSeccessCounter = 0;
 /**
  * @brief 	Store the random seed generated through the DcmDspSecurityGetSeedFnc.
  */
@@ -178,14 +158,29 @@ extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF180[32];
 extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF187[16];
 
 /**
+ * @brief 	Internal buffer of the "DcmDspData_0xF189".
+ */
+extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF189[24];
+
+/**
  * @brief 	Internal buffer of the "DcmDspData_0xF089".
  */
 extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF089[24];
 
 /**
+ * @brief 	Internal buffer of the "DcmDspData_0xF013".
+ */
+extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF013[16];
+
+/**
  * @brief 	Internal buffer of the "DcmDspData_0xF18A".
  */
 extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF18A[10];
+
+/**
+ * @brief 	Internal buffer of the "DcmDspData_0xF18C".
+ */
+extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF18C[47];
 
 /**
  * @brief 	Internal buffer of the "DcmDspData_0xF186".
@@ -195,34 +190,65 @@ extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF186[1];
 /**
  * @brief 	Internal buffer of the "DcmDspData_0xF184".
  */
-extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF184[19];
+extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF184[18];
 
 /**
  * @brief 	Internal buffer of the "DcmDspData_0xF0F1".
  */
-extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF0F1[4];
+extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF0F1[18];
 
 /**
  * @brief 	Internal buffer of the "DcmDspData_0xF0F3".
  */
-extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF0F3[4];
+extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF0F3[18];
 
 /**
  * @brief 	Internal buffer of the "DcmDspData_0xF160".
  */
-extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF160[1];
+extern VAR(uint8, DCM_VAR)Dcm_DspDataInternalBuffer_DcmDspData_0xF160[18];
+
+uint8 EcuNUmber[20] = {
+		'1', '0', '_', '1', '1','_','1', '1','_','4','_','1', '2','_','2', '6','0', '7','1', '8'
+};
+
+uint8 PartNumber[16] = {
+		'4', '0', '2', '0', '8', '2', '0', '1', '4', 'A', 'A', 0x20u, 0x20u, 0x20u, 0x20u, 0x20u
+};
+
+uint8 VendorCode[10] = {
+		'8', 'K', 'C', 0x20, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u
+};
+
+uint8 HardVersionNumber[24] = {
+		'0', '.', '0', '.', '1', 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u,
+        0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u
+};
+
+uint8 BootVersionNumber[32] = {
+		'0', '1', '.', '0', '0', '.', '0', '0', 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u,
+    0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u
+};
+
+uint8 AppVersionNumber[24] = {
+		'0', '1', '.', '0', '0', '.', '0', '0', 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u
+        , 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u, 0x20u
+};
+
+/*for debugging*/
+uint8 SoftwarePartNumber[16] = {
+		'S', '0', '0', '0', '0', '0', '6', '4', '5', '4', '7', 0x20u, 0x20u, 0x20u, 0x20u, 0x20u
+};
 /*====================================================================================================*
  *                                          GLOBAL FUNCTIONS                                        
  *====================================================================================================*/
 #define DCM_START_SEC_CODE
 #include "Dcm_MemMap.h"
 
-
-// extern uint32 randSeed;
 static uint8 LocalSeed[16] = {0};
 
+
 static uint8 SecurityConstant[16] = {
-    0x15U, 0xDEU, 0x01U, 0xA0U, 0x7AU, 0x56U, 0x8DU, 0xA4U, 0xD4U, 0x75U, 0xF5U, 0x16U, 0x97U, 0x2FU, 0xD7U, 0xD2U
+    0xDEU, 0x99U, 0x36U, 0x5EU, 0x27U, 0x31U, 0x26U, 0x66U, 0xC7U, 0x3CU, 0xABU, 0xF3U, 0x36U, 0x71U, 0x44U, 0xB7U
 };
 
 STATIC FUNC(void,DCM_CODE)Dcm_MemoryCopy
@@ -243,6 +269,8 @@ STATIC FUNC(void,DCM_CODE)Dcm_MemoryCopy
     }
     return;
 }
+
+
 
 
 #if((STD_ON == DCM_UDS0x23_ENABLE) || (STD_ON == DCM_UDS0x2C_ENABLE) || (STD_ON == DCM_UDS0x36_ENABLE))
@@ -322,8 +350,6 @@ FUNC(Dcm_ReturnReadMemoryType, DCM_CODE)Dcm_ReadMemory
  *
  * @req [SWS_Dcm_00540]
  */
-
-//  boolean Dcm_Write_Pending = FALSE;
 FUNC(Dcm_ReturnWriteMemoryType, DCM_CODE)Dcm_WriteMemory
 (
 	Dcm_OpStatusType OpStatus,
@@ -335,19 +361,6 @@ FUNC(Dcm_ReturnWriteMemoryType, DCM_CODE)Dcm_WriteMemory
 )
 {
 	Dcm_ReturnWriteMemoryType result = DCM_WRITE_FAILED;
-    result = FBL_Dcm0x36Call(MemoryAddress,MemoryData,MemorySize);
-    if(result == E_NOT_OK)
-    {
-        *ErrorCode = DCM_E_REQUESTOUTOFRANGE;
-    }
-
-    // if(Dcm_Write_Pending == FALSE)
-    // {
-    //     *ErrorCode = DCM_E_RESPONSE_PENDING;
-    //     Dcm_Write_Pending = TRUE;
-    //     return DCM_E_PENDING;
-    // }
-    // Dcm_Write_Pending = FALSE;
 
 	return result;
 }
@@ -459,7 +472,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_ProcessRequestTransferExit
 	P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
 )
 {
-	Std_ReturnType result = (Std_ReturnType)E_OK;
+	Std_ReturnType result = (Std_ReturnType)E_NOT_OK;
 
 	return result;
 }
@@ -552,11 +565,7 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_ProcessRequestDownload
 )
 {
 	Std_ReturnType result = (Std_ReturnType)E_NOT_OK;
-    result = FBL_Dcm0x34Call(MemoryAddress,MemorySize,BlockLength);
-    if(result == E_NOT_OK)
-    {
-        *ErrorCode = DCM_E_REQUESTOUTOFRANGE;
-    }
+
 	return result;
 }
 #endif /* #if(STD_ON == DCM_UDS0x34_ENABLE) */
@@ -645,7 +654,47 @@ FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x22ConditionCheck
     return result;
 }
 
+FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x28Sub0x0ConditionCheck
+(
+    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
+)
+{
+    Std_ReturnType result = (Std_ReturnType)E_OK;
+    (void)ErrorCode;
+    return result;
+}
+
+FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x28Sub0x3ConditionCheck
+(
+    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
+)
+{
+    Std_ReturnType result = (Std_ReturnType)E_OK;
+    (void)ErrorCode;
+    return result;
+}
+
 FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x31Sub0x1ConditionCheck
+(
+    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
+)
+{
+    Std_ReturnType result = (Std_ReturnType)E_OK;
+    (void)ErrorCode;
+    return result;
+}
+
+FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x85Sub0x1ConditionCheck
+(
+    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
+)
+{
+    Std_ReturnType result = (Std_ReturnType)E_OK;
+    (void)ErrorCode;
+    return result;
+}
+
+FUNC(Std_ReturnType, DCM_CODE)Dcm_UDS0x85Sub0x2ConditionCheck
 (
     P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
 )
@@ -715,6 +764,36 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspDataRead_0xF187
     return result;
 }
 
+FUNC(Std_ReturnType, DCM_CODE)DcmDspDataConditionCheckRead_0xF189
+(
+    Dcm_OpStatusType OpStatus,
+    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
+)
+{
+    Std_ReturnType result = (Std_ReturnType)E_OK;
+    (void)OpStatus;
+    (void)ErrorCode;
+    return result;
+}
+
+FUNC(Std_ReturnType, DCM_CODE)DcmDspDataRead_0xF189
+(
+    Dcm_OpStatusType OpStatus,
+    P2VAR(uint8, AUTOMATIC, DCM_VAR)Data,
+    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
+)
+{
+    Std_ReturnType result = (Std_ReturnType)E_OK;
+    (void)OpStatus;
+    (void)ErrorCode;
+    uint16 u16Index;
+    for(u16Index = 0u; u16Index < 24u; u16Index++)
+    {
+        Data[u16Index] = AppVersionNumber[u16Index];
+    }
+    return result;
+}
+
 FUNC(Std_ReturnType, DCM_CODE)DcmDspDataConditionCheckRead_0xF089
 (
     Dcm_OpStatusType OpStatus,
@@ -745,6 +824,36 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspDataRead_0xF089
     return result;
 }
 
+FUNC(Std_ReturnType, DCM_CODE)DcmDspDataConditionCheckRead_0xF013
+(
+    Dcm_OpStatusType OpStatus,
+    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
+)
+{
+    Std_ReturnType result = (Std_ReturnType)E_OK;
+    (void)OpStatus;
+    (void)ErrorCode;
+    return result;
+}
+
+FUNC(Std_ReturnType, DCM_CODE)DcmDspDataRead_0xF013
+(
+    Dcm_OpStatusType OpStatus,
+    P2VAR(uint8, AUTOMATIC, DCM_VAR)Data,
+    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
+)
+{
+    Std_ReturnType result = (Std_ReturnType)E_OK;
+    (void)OpStatus;
+    (void)ErrorCode;
+    uint16 u16Index;
+    for(u16Index = 0u; u16Index < 16u; u16Index++)
+    {
+        Data[u16Index] = SoftwarePartNumber[u16Index];
+    }
+    return result;
+}
+
 FUNC(Std_ReturnType, DCM_CODE)DcmDspDataConditionCheckRead_0xF18A
 (
     Dcm_OpStatusType OpStatus,
@@ -771,6 +880,36 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspDataRead_0xF18A
     for(u16Index = 0u; u16Index < 10u; u16Index++)
     {
         Data[u16Index] = VendorCode[u16Index];
+    }
+    return result;
+}
+
+FUNC(Std_ReturnType, DCM_CODE)DcmDspDataConditionCheckRead_0xF18C
+(
+    Dcm_OpStatusType OpStatus,
+    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
+)
+{
+    Std_ReturnType result = (Std_ReturnType)E_OK;
+    (void)OpStatus;
+    (void)ErrorCode;
+    return result;
+}
+
+FUNC(Std_ReturnType, DCM_CODE)DcmDspDataRead_0xF18C
+(
+    Dcm_OpStatusType OpStatus,
+    P2VAR(uint8, AUTOMATIC, DCM_VAR)Data,
+    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
+)
+{
+    Std_ReturnType result = (Std_ReturnType)E_OK;
+    (void)OpStatus;
+    (void)ErrorCode;
+    uint16 u16Index;
+    for(u16Index = 0u; u16Index < 20u; u16Index++)
+    {
+        Data[u16Index] = EcuNUmber[u16Index];
     }
     return result;
 }
@@ -825,42 +964,8 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspDataRead_0xF184
     (void)OpStatus;
     (void)ErrorCode;
     uint16 u16Index;
-	 uint16 datalen;
-	 EE_ReadRecord(&eeConf,EE_BLOCK_Finger_F184,19,Data,&datalen,NULL);
-    for(u16Index = 0u; u16Index < 19u; u16Index++)
-    {
-        Data[u16Index] = Dcm_DspDataInternalBuffer_DcmDspData_0xF184[u16Index];
-    }
-    return result;
-}
-
-FUNC(Std_ReturnType, DCM_CODE)DcmDspDataWrite_0xF184
-(
-    P2CONST(uint8, AUTOMATIC, DCM_CONST)Data,
-    uint16 DataLength,
-    Dcm_OpStatusType OpStatus,
-    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
-)
-{
-    Std_ReturnType result = (Std_ReturnType)E_OK;
-    (void)OpStatus;
-    (void)ErrorCode;
-    uint16 u16Index;
-		
-		if(Data[1]>12||Data[2]>31||Data[1]==0||Data[2]==0)
-		{
-			*ErrorCode=DCM_E_REQUESTOUTOFRANGE;
-			result=1;
-		}
-		else 
-		{
-			EE_WriteRecord(&eeConf,EE_BLOCK_Finger_F184,DataLength,Data,0,NULL);
-		}
-	  
-    for(u16Index = 0u; u16Index < DataLength; u16Index++)
-    {
-        Dcm_DspDataInternalBuffer_DcmDspData_0xF184[u16Index] = Data[u16Index];
-    }
+    uint8 RealLeng = 0;
+    EE_ReadRecord(&eeConf,EE_BLOCK_Finger_F184,19,Data,&RealLeng,NULL_PTR);
     return result;
 }
 
@@ -876,7 +981,7 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspDataConditionCheckRead_0xF0F1
     return result;
 }
 
-uint8 UpdataTriedCounter = 0;
+uint32 UpdataTriedCounter = 0;
 FUNC(Std_ReturnType, DCM_CODE)DcmDspDataRead_0xF0F1
 (
     Dcm_OpStatusType OpStatus,
@@ -895,6 +1000,7 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspDataRead_0xF0F1
     Data[1] = EE_UpdataTriedCounter >> 24;
     Data[2] = EE_UpdataTriedCounter;
     Data[3] = EE_UpdataTriedCounter >> 8;
+
     return result;
 }
 
@@ -910,6 +1016,7 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspDataConditionCheckRead_0xF0F3
     return result;
 }
 
+uint32 DependecyCheckSeccessCounter = 0;
 FUNC(Std_ReturnType, DCM_CODE)DcmDspDataRead_0xF0F3
 (
     Dcm_OpStatusType OpStatus,
@@ -958,7 +1065,7 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspDataRead_0xF160
     return result;
 }
 
-FUNC(Std_ReturnType, DCM_CODE)DcmDspStartRoutine_0x0203
+FUNC(Std_ReturnType, DCM_CODE)StartRoutine_0x203_CheckProgrammingPreconditions
 (
     P2VAR(uint8, AUTOMATIC, DCM_VAR)DataIn,
     P2CONST(uint8, AUTOMATIC, DCM_CONST)DataInVar,
@@ -977,136 +1084,22 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspStartRoutine_0x0203
     (void)DataOut;
     (void)DataOutVar;
     (void)CurrentLengthDataInVar;
-    (void)CurrentLengthDataOutVar;
     (void)ErrorCode;
-    return result;
-}
-
-FUNC(Std_ReturnType, DCM_CODE)DcmDspStartRoutine_0xFF00_EraseMemory
-(
-    P2VAR(uint8, AUTOMATIC, DCM_VAR)DataIn,
-    P2CONST(uint8, AUTOMATIC, DCM_CONST)DataInVar,
-    Dcm_OpStatusType OpStatus,
-    P2VAR(uint8, AUTOMATIC, DCM_VAR)DataOut,
-    P2VAR(uint8, AUTOMATIC, DCM_VAR)DataOutVar,
-    uint16 CurrentLengthDataInVar,
-    P2VAR(uint16, AUTOMATIC, DCM_VAR)CurrentLengthDataOutVar,
-    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
-)
-{
-    Std_ReturnType result = (Std_ReturnType)E_OK;
-    uint8 Index = 0;
-    (void)DataIn;
-    (void)DataInVar;
-    (void)OpStatus;
-    (void)DataOut;
-    (void)DataOutVar;
-    (void)CurrentLengthDataInVar;
-    (void)CurrentLengthDataOutVar;
-    (void)ErrorCode;
-    result = FBL_Dcm0x31ff00Erase(Index);
-    return result;
-}
-
-FUNC(Std_ReturnType, DCM_CODE)DcmDspStartRoutine_0xFF01_checkProgrammingDependencies
-(
-    P2VAR(uint8, AUTOMATIC, DCM_VAR)DataIn,
-    P2CONST(uint8, AUTOMATIC, DCM_CONST)DataInVar,
-    Dcm_OpStatusType OpStatus,
-    P2VAR(uint8, AUTOMATIC, DCM_VAR)DataOut,
-    P2VAR(uint8, AUTOMATIC, DCM_VAR)DataOutVar,
-    uint16 CurrentLengthDataInVar,
-    P2VAR(uint16, AUTOMATIC, DCM_VAR)CurrentLengthDataOutVar,
-    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
-)
-{
-    Std_ReturnType result = (Std_ReturnType)E_OK;
-    (void)DataInVar;
-    (void)OpStatus;
-    (void)DataOutVar;
-    (void)CurrentLengthDataInVar;
-    result = CheckProgrammingDependncies();
+    *DataOut = 0x00;
     *CurrentLengthDataOutVar = 1;
-    uint8 RealLeng = 0;
-    EE_ReadRecord(&eeConf,EE_DependecyCheckSeccessCounter,4,&DependecyCheckSeccessCounter,&RealLeng,NULL_PTR);
-    DependecyCheckSeccessCounter++;
-    EE_WriteRecord(&eeConf,EE_DependecyCheckSeccessCounter,4,&DependecyCheckSeccessCounter,0,NULL_PTR);
-
-    *DataOut = result;
     return result;
 }
 
-FUNC(Std_ReturnType, DCM_CODE)DcmDspStartRoutine_0xDD01_StayInBoot
-(
-    P2VAR(uint8, AUTOMATIC, DCM_VAR)DataIn,
-    P2CONST(uint8, AUTOMATIC, DCM_CONST)DataInVar,
-    Dcm_OpStatusType OpStatus,
-    P2VAR(uint8, AUTOMATIC, DCM_VAR)DataOut,
-    P2VAR(uint8, AUTOMATIC, DCM_VAR)DataOutVar,
-    uint16 CurrentLengthDataInVar,
-    P2VAR(uint16, AUTOMATIC, DCM_VAR)CurrentLengthDataOutVar,
-    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
-)
-{
-    Std_ReturnType result = (Std_ReturnType)E_OK;
-    (void)DataIn;
-    (void)DataInVar;
-    (void)OpStatus;
-    (void)DataOut;
-    (void)DataOutVar;
-    (void)CurrentLengthDataInVar;
-    (void)CurrentLengthDataOutVar;
-    (void)ErrorCode;
-    Dcm_NewActiveSession = DCM_DEFAULT_SESSION;
-	Dcm_NewActiveSessionIdx = 1;
-	Dcm_ProtocolStartState = 1;
-	DslInternal_SetSesCtrlType(Dcm_NewActiveSession);
-    return result;
-}
 
-boolean DD02_Pending = FALSE;
-FUNC(Std_ReturnType, DCM_CODE)DcmDspStartRoutine_0xDD02_SecuritySignatureVerification
-(
-    P2VAR(uint8, AUTOMATIC, DCM_VAR)DataIn,
-    P2CONST(uint8, AUTOMATIC, DCM_CONST)DataInVar,
-    Dcm_OpStatusType OpStatus,
-    P2VAR(uint8, AUTOMATIC, DCM_VAR)DataOut,
-    P2VAR(uint8, AUTOMATIC, DCM_VAR)DataOutVar,
-    uint16 CurrentLengthDataInVar,
-    P2VAR(uint16, AUTOMATIC, DCM_VAR)CurrentLengthDataOutVar,
-    P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
-)
-{
-    Std_ReturnType result = (Std_ReturnType)E_OK;
-    (void)DataInVar;
-    (void)OpStatus;
-    (void)DataOutVar;
-    (void)CurrentLengthDataInVar;
 
-    if(DD02_Pending == FALSE)
-    {
-        //*ErrorCode = 0x78;
-			 
-        DD02_Pending = TRUE;
-			  *ErrorCode = DCM_E_RESPONSE_PENDING;
-        return DCM_E_PENDING;
-    }
-
-  *DataOut = FBL_Dcm0x31DD02Check(DataIn);
-		*CurrentLengthDataOutVar = 1;
-    DD02_Pending = FALSE;
-    return result;
-
-}
-
-FUNC(Std_ReturnType, DCM_CODE)DcmDspSecurityCompareKey_Level_FBL
+FUNC(Std_ReturnType, DCM_CODE)DcmDspSecurityCompareKey_Level_1
 (
     P2CONST(uint8, AUTOMATIC, DCM_CONST)Key,
     Dcm_OpStatusType OpStatus,
     P2VAR(Dcm_NegativeResponseCodeType, AUTOMATIC, DCM_VAR)ErrorCode
 )
 {
-    Std_ReturnType ret = E_OK;
+       Std_ReturnType ret = E_OK;
 
     uint8 expectedKey[16] = {0u};
     struct aes128_t ctx;
@@ -1131,7 +1124,7 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspSecurityCompareKey_Level_FBL
     return ret;
 }
 
-FUNC(Std_ReturnType, DCM_CODE)DcmDspSecurityGetSeed_Level_FBL
+FUNC(Std_ReturnType, DCM_CODE)DcmDspSecurityGetSeed_Level_1
 (
     P2CONST(uint8, AUTOMATIC, DCM_CONST)SecurityAccessDataRecord,
     Dcm_OpStatusType OpStatus,
@@ -1159,7 +1152,10 @@ FUNC(Std_ReturnType, DCM_CODE)DcmDspSecurityGetSeed_Level_FBL
         ret = E_OK;
     }
     return ret;
-}
+		
+}		
+
+
 
 #define DCM_STOP_SEC_CODE
 #include "Dcm_MemMap.h"

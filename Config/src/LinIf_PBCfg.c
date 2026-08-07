@@ -25,7 +25,15 @@ extern "C"{
  *====================================================================================================*/
 
 #include "LinIf.h"
-#include "Dcm_Cfg.h"
+#include "Com_Cfg.h"
+#include "Lin.h"
+//#include "LinSM_Cbk.h"
+#include "PduR_LinIf.h"
+
+/* 应用层桥接函数声明（LinIf → LinApp 数据通路） */
+extern void LinApp_Rx_Bridge(PduIdType RxPduId, const PduInfoType* PduInfoPtr);
+extern Std_ReturnType LinApp_TxTrigger_Bridge(PduIdType TxPduId, PduInfoType* PduInfoPtr);
+extern void LinApp_TxConfirm_Bridge(PduIdType TxPduId);
 
 /*====================================================================================================*
  *                                  SOURCE FILE VERSION INFORMATION                                 
@@ -79,7 +87,7 @@ CONST(LinIf_LinDriverApiCfgType,LINIF_CONST)LINIF_API_TABLE[1] =
 {
     {
         /**< @brief Validates for upper layers the wake up of LIN channel.. */
-        NULL_PTR,
+        &Lin_CheckWakeup,
 
         /**< @brief Sends a LIN frame.. */
         NULL_PTR,
@@ -90,13 +98,13 @@ CONST(LinIf_LinDriverApiCfgType,LINIF_CONST)LINIF_API_TABLE[1] =
         NULL_PTR,
 
         /**< @brief Put a Lin channel in the internal sleep state.. */
-        NULL_PTR,
+        &Lin_GoToSleepInternal,
 
         /**< @brief Generates a wake up pulse.. */
-        NULL_PTR,
+        &Lin_Wakeup,
 
         /**< @brief Wake up the LIN channel.. */
-        NULL_PTR,
+        &Lin_WakeupInternal,
 
         /**< @brief Gets the status of the LIN driver.. */
         NULL_PTR
@@ -108,12 +116,56 @@ CONST(LinIf_LinDriverApiCfgType,LINIF_CONST)LINIF_API_TABLE[1] =
 /**
  * @brief LinIf LinIfChannel_0 Channels  Frames Configuration.
  */
-CONST(LinIf_FrameCfgType,LINIF_CONST) LinIf_LinIfChannel_0_Frames[3];
+CONST(LinIf_FrameCfgType,LINIF_CONST) LinIf_LinIfChannel_0_Frames[6];
 
 
 /**
  * @brief LinIf Channels Rx Frames Configuration.
  */
+/**
+ * @brief LinIf LinIfChannel_0 Channels LinFrame_ZCU_SMM_1_Rx Rx Pdu Configuration.
+ */
+CONST(LinIf_RxPduCfgType,LINIF_CONST) LinIf_LinIfChannel_0_LinFrame_ZCU_SMM_1_Rx_RxPdu =
+{
+    /**
+     *  @brief This parameter defines the upper layer (UL) module to which
+     *         the indication of the successfully received LinIfRxPdu has to be routed via
+     *         User_RxIndication
+     */
+     (LinIf_ULModuleType)LINIF_CDD,
+
+    /**
+     *  @brief This parameter defines the name of the User_RxIndication
+     */
+    &LinApp_Rx_Bridge,
+
+    /**
+     *  @brief Reference to the PDU that is received in this frame.
+     */
+     PduRConf_PduRSrcPdu_LinPdu_LinIfToPduR_ZCU_SMM_1_Rx
+};
+/**
+ * @brief LinIf LinIfChannel_0 Channels LinFrame_ZCU_SMM_2_Rx Rx Pdu Configuration.
+ */
+CONST(LinIf_RxPduCfgType,LINIF_CONST) LinIf_LinIfChannel_0_LinFrame_ZCU_SMM_2_Rx_RxPdu =
+{
+    /**
+     *  @brief This parameter defines the upper layer (UL) module to which
+     *         the indication of the successfully received LinIfRxPdu has to be routed via
+     *         User_RxIndication
+     */
+     (LinIf_ULModuleType)LINIF_CDD,
+
+    /**
+     *  @brief This parameter defines the name of the User_RxIndication
+     */
+    &LinApp_Rx_Bridge,
+
+    /**
+     *  @brief Reference to the PDU that is received in this frame.
+     */
+     PduRConf_PduRSrcPdu_LinPdu_LinIfToPduR_ZCU_SMM_2_Rx
+};
 /**
  * @brief LinIf LinIfChannel_0 Channels LinFrame_MasterReq_Rx Rx Pdu Configuration.
  */
@@ -134,12 +186,12 @@ CONST(LinIf_RxPduCfgType,LINIF_CONST) LinIf_LinIfChannel_0_LinFrame_MasterReq_Rx
     /**
      *  @brief Reference to the PDU that is received in this frame.
      */
-     DcmConf_DcmDslProtocolRx_LinPdu_LinTpToDcm_MasterReq_Rx
+     PduRConf_PduRSrcPdu_LinPdu_LinTpToPduR_MasterReq_Rx
 };
 /**
- * @brief LinIf LinIfChannel_0 Channels LinFrame_Function_Rx Rx Pdu Configuration.
+ * @brief LinIf LinIfChannel_0 Channels LinIf_Function_Rx Rx Pdu Configuration.
  */
-CONST(LinIf_RxPduCfgType,LINIF_CONST) LinIf_LinIfChannel_0_LinFrame_Function_Rx_RxPdu =
+CONST(LinIf_RxPduCfgType,LINIF_CONST) LinIf_LinIfChannel_0_LinIf_Function_Rx_RxPdu =
 {
     /**
      *  @brief This parameter defines the upper layer (UL) module to which
@@ -156,12 +208,45 @@ CONST(LinIf_RxPduCfgType,LINIF_CONST) LinIf_LinIfChannel_0_LinFrame_Function_Rx_
     /**
      *  @brief Reference to the PDU that is received in this frame.
      */
-     DcmConf_DcmDslProtocolRx_LinTp_To_PudR_Function_Rx
+     PduRConf_PduRSrcPdu_LinPdu_LinTpToPduR_FuncReq_Rx
 };
 
 /**
  * @brief LinIf Channels Tx Frames Configuration.
  */
+/**
+ * @brief LinIf LinIfChannel_0 Channels LinFrame_DSMM_1_Tx Tx Pdu Configuration.
+ */
+CONST(LinIf_TxPduCfgType,LINIF_CONST) LinIf_LinIfChannel_0_LinFrame_DSMM_1_Tx_TxPdu =
+{
+	/**
+	 *  @brief This parameter defines the upper layer (UL) module to which the trigger
+	 *         of the transmitted LinTxPdu User_TriggerTransmit
+	 *         the confirmation of the successfully transmitted LinTxPdu has to be routed
+	 *         User_TxConfirmation
+	 */
+     (LinIf_ULModuleType)LINIF_CDD,
+
+	/**
+	 *  @brief his parameter defines the name of the User_TxConfirmation
+	 */
+    &LinApp_TxConfirm_Bridge,
+
+	/**
+	 *  @brief Identifier of the Pdu for the upper layer.
+	 */
+     0,
+
+	/**
+	 *  @brief his parameter defines the name of the User_TriggerTransmit
+	 */
+	 &LinApp_TxTrigger_Bridge,
+
+    /**
+	 *  @brief Reference to the PDU that is transmitted in this frame.
+	 */
+	 PduRConf_PduRDestPdu_LinPdu_PduRToLinIf_DSMM_1_Tx,
+};
 /**
  * @brief LinIf LinIfChannel_0 Channels LinFrame_SlaveResp_Tx Tx Pdu Configuration.
  */
@@ -183,7 +268,7 @@ CONST(LinIf_TxPduCfgType,LINIF_CONST) LinIf_LinIfChannel_0_LinFrame_SlaveResp_Tx
 	/**
 	 *  @brief Identifier of the Pdu for the upper layer.
 	 */
-     61,
+     0,
 
 	/**
 	 *  @brief his parameter defines the name of the User_TriggerTransmit
@@ -193,7 +278,7 @@ CONST(LinIf_TxPduCfgType,LINIF_CONST) LinIf_LinIfChannel_0_LinFrame_SlaveResp_Tx
     /**
 	 *  @brief Reference to the PDU that is transmitted in this frame.
 	 */
-	 DcmConf_DcmDslProtocolTx_LinPdu_DcmToLinTp_SlaveResp_Tx,
+	 PduRConf_PduRDestPdu_LinPdu_PduRToLinTp_SlaveResp_Tx,
 };
 
 /**
@@ -202,8 +287,242 @@ CONST(LinIf_TxPduCfgType,LINIF_CONST) LinIf_LinIfChannel_0_LinFrame_SlaveResp_Tx
 /**
  * @brief LinIf LinIfChannel_0 Channels  Frames Configuration.
  */
-CONST(LinIf_FrameCfgType,LINIF_CONST) LinIf_LinIfChannel_0_Frames[3] =
+CONST(LinIf_FrameCfgType,LINIF_CONST) LinIf_LinIfChannel_0_Frames[6] =
 {
+    {
+    	/**
+         *  @brief Type of checksum that the frame is using.
+         */
+         (LinIf_ChecksumType)LINIF_ENHANCED,
+
+        /**
+         *  @brief ID of the LIN frame. The Protected ID including parity
+         *         is calculated by the generation tool.
+         */
+         (uint8)0xaU,
+
+        /**
+         *  @brief Protection ID identifier calculated by the tool.
+         */
+         (uint8)0xcaU,
+
+        /**
+         *  @brief PID index of the frame. This index is used in the
+         *         AssignFrameIdentifierRange node configuration service to
+         *         identify the frame(s) to which a new PID shall be assigned.
+         */
+         (uint8)0U,
+
+        /**
+         *  @brief Index value of the LIN frame Length.
+         */
+         (uint8)8U,
+
+        /**
+         *  @brief Index value of the LIN frame in the PID table.
+         */
+        (uint16)0U,
+
+        /**
+         *  @brief Index value of the LIN frame in the PID table.
+         */
+         (boolean)TRUE,
+
+        /**
+         *  @brief This parameter defines the type of frame (e.g. sporadic frame).
+         */
+         (LinIf_FrameType)LINIF_UNCONDITIONAL,
+
+        /**
+         *  @brief In case this is a fixed frame this is the SDU (response).
+         *         This container represents an eight byte array.
+         *         The Byte order shall be MSB first.
+         */
+         NULL_PTR,
+
+        /**
+         *  @brief Direction of the frame.
+         */
+        LINIF_TX_PDU,
+
+        /**
+         *  @brief represents a received PDU/frame
+         */
+         NULL_PTR,
+
+         /**
+         *  @brief represents a transmitted PDU/frame
+         */
+         &LinIf_LinIfChannel_0_LinFrame_DSMM_1_Tx_TxPdu,
+
+        /**
+         *  @brief The maximum number of associated unconditional frames.
+         */
+         (uint16)0U,
+
+        /**
+         *  @brief Reference to an unconditional Frame that is used as
+         *         sporadic frame in a master node or event-triggered
+         *         frame in a slave node.
+         */
+        NULL_PTR
+    },
+    {
+    	/**
+         *  @brief Type of checksum that the frame is using.
+         */
+         (LinIf_ChecksumType)LINIF_ENHANCED,
+
+        /**
+         *  @brief ID of the LIN frame. The Protected ID including parity
+         *         is calculated by the generation tool.
+         */
+         (uint8)0xcU,
+
+        /**
+         *  @brief Protection ID identifier calculated by the tool.
+         */
+         (uint8)0x4cU,
+
+        /**
+         *  @brief PID index of the frame. This index is used in the
+         *         AssignFrameIdentifierRange node configuration service to
+         *         identify the frame(s) to which a new PID shall be assigned.
+         */
+         (uint8)1U,
+
+        /**
+         *  @brief Index value of the LIN frame Length.
+         */
+         (uint8)8U,
+
+        /**
+         *  @brief Index value of the LIN frame in the PID table.
+         */
+        (uint16)1U,
+
+        /**
+         *  @brief Index value of the LIN frame in the PID table.
+         */
+         (boolean)FALSE,
+
+        /**
+         *  @brief This parameter defines the type of frame (e.g. sporadic frame).
+         */
+         (LinIf_FrameType)LINIF_UNCONDITIONAL,
+
+        /**
+         *  @brief In case this is a fixed frame this is the SDU (response).
+         *         This container represents an eight byte array.
+         *         The Byte order shall be MSB first.
+         */
+         NULL_PTR,
+
+        /**
+         *  @brief Direction of the frame.
+         */
+        LINIF_RX_PDU,
+
+        /**
+         *  @brief represents a received PDU/frame
+         */
+         &LinIf_LinIfChannel_0_LinFrame_ZCU_SMM_1_Rx_RxPdu,
+
+         /**
+         *  @brief represents a transmitted PDU/frame
+         */
+         NULL_PTR,
+
+        /**
+         *  @brief The maximum number of associated unconditional frames.
+         */
+         (uint16)0U,
+
+        /**
+         *  @brief Reference to an unconditional Frame that is used as
+         *         sporadic frame in a master node or event-triggered
+         *         frame in a slave node.
+         */
+        NULL_PTR
+    },
+    {
+    	/**
+         *  @brief Type of checksum that the frame is using.
+         */
+         (LinIf_ChecksumType)LINIF_ENHANCED,
+
+        /**
+         *  @brief ID of the LIN frame. The Protected ID including parity
+         *         is calculated by the generation tool.
+         */
+         (uint8)0xeU,
+
+        /**
+         *  @brief Protection ID identifier calculated by the tool.
+         */
+         (uint8)0x8eU,
+
+        /**
+         *  @brief PID index of the frame. This index is used in the
+         *         AssignFrameIdentifierRange node configuration service to
+         *         identify the frame(s) to which a new PID shall be assigned.
+         */
+         (uint8)2U,
+
+        /**
+         *  @brief Index value of the LIN frame Length.
+         */
+         (uint8)8U,
+
+        /**
+         *  @brief Index value of the LIN frame in the PID table.
+         */
+        (uint16)2U,
+
+        /**
+         *  @brief Index value of the LIN frame in the PID table.
+         */
+         (boolean)FALSE,
+
+        /**
+         *  @brief This parameter defines the type of frame (e.g. sporadic frame).
+         */
+         (LinIf_FrameType)LINIF_UNCONDITIONAL,
+
+        /**
+         *  @brief In case this is a fixed frame this is the SDU (response).
+         *         This container represents an eight byte array.
+         *         The Byte order shall be MSB first.
+         */
+         NULL_PTR,
+
+        /**
+         *  @brief Direction of the frame.
+         */
+        LINIF_RX_PDU,
+
+        /**
+         *  @brief represents a received PDU/frame
+         */
+         &LinIf_LinIfChannel_0_LinFrame_ZCU_SMM_2_Rx_RxPdu,
+
+         /**
+         *  @brief represents a transmitted PDU/frame
+         */
+         NULL_PTR,
+
+        /**
+         *  @brief The maximum number of associated unconditional frames.
+         */
+         (uint16)0U,
+
+        /**
+         *  @brief Reference to an unconditional Frame that is used as
+         *         sporadic frame in a master node or event-triggered
+         *         frame in a slave node.
+         */
+        NULL_PTR
+    },
     {
     	/**
          *  @brief Type of checksum that the frame is using.
@@ -226,7 +545,7 @@ CONST(LinIf_FrameCfgType,LINIF_CONST) LinIf_LinIfChannel_0_Frames[3] =
          *         AssignFrameIdentifierRange node configuration service to
          *         identify the frame(s) to which a new PID shall be assigned.
          */
-         (uint8)0U,
+         (uint8)3U,
 
         /**
          *  @brief Index value of the LIN frame Length.
@@ -236,7 +555,7 @@ CONST(LinIf_FrameCfgType,LINIF_CONST) LinIf_LinIfChannel_0_Frames[3] =
         /**
          *  @brief Index value of the LIN frame in the PID table.
          */
-        (uint16)0U,
+        (uint16)3U,
 
         /**
          *  @brief Index value of the LIN frame in the PID table.
@@ -304,7 +623,7 @@ CONST(LinIf_FrameCfgType,LINIF_CONST) LinIf_LinIfChannel_0_Frames[3] =
          *         AssignFrameIdentifierRange node configuration service to
          *         identify the frame(s) to which a new PID shall be assigned.
          */
-         (uint8)1U,
+         (uint8)4U,
 
         /**
          *  @brief Index value of the LIN frame Length.
@@ -314,7 +633,7 @@ CONST(LinIf_FrameCfgType,LINIF_CONST) LinIf_LinIfChannel_0_Frames[3] =
         /**
          *  @brief Index value of the LIN frame in the PID table.
          */
-        (uint16)1U,
+        (uint16)4U,
 
         /**
          *  @brief Index value of the LIN frame in the PID table.
@@ -382,7 +701,7 @@ CONST(LinIf_FrameCfgType,LINIF_CONST) LinIf_LinIfChannel_0_Frames[3] =
          *         AssignFrameIdentifierRange node configuration service to
          *         identify the frame(s) to which a new PID shall be assigned.
          */
-         (uint8)3U,
+         (uint8)5U,
 
         /**
          *  @brief Index value of the LIN frame Length.
@@ -392,7 +711,7 @@ CONST(LinIf_FrameCfgType,LINIF_CONST) LinIf_LinIfChannel_0_Frames[3] =
         /**
          *  @brief Index value of the LIN frame in the PID table.
          */
-        (uint16)2U,
+        (uint16)5U,
 
         /**
          *  @brief Index value of the LIN frame in the PID table.
@@ -419,7 +738,7 @@ CONST(LinIf_FrameCfgType,LINIF_CONST) LinIf_LinIfChannel_0_Frames[3] =
         /**
          *  @brief represents a received PDU/frame
          */
-         &LinIf_LinIfChannel_0_LinFrame_Function_Rx_RxPdu,
+         &LinIf_LinIfChannel_0_LinIf_Function_Rx_RxPdu,
 
          /**
          *  @brief represents a transmitted PDU/frame
@@ -460,7 +779,7 @@ CONST(LinIf_SlaveNodeCfgType,LINIF_CONST) LinIf_LinIfChannel_0_SlaveNode =
     /**
 	 *  @brief Reference to the response_error signal.
 	 */
-    0xFFU,
+    ComConf_ComSignal_DSMM_Rsp_Error_Tx,
 
     /**
 	 *  @brief Slave node configured NAD.
@@ -490,7 +809,7 @@ CONST(LinIf_SlaveNodeCfgType,LINIF_CONST) LinIf_LinIfChannel_0_SlaveNode =
     /**
 	 *  @brief LIN variant Id.
 	 */
-	 (uint8)255U
+	 (uint8)0U
 };
 
 /**
@@ -507,18 +826,18 @@ CONST(LinIf_ChannelConfigCfgType, LINIF_CONST) LinIf_SlaveChannelsConfig[LINIF_M
          *         to which the confirmation of the goto-sleep command
          *         shall be sent.
          */
-         LINIF_NONE,
+         LINIF_LIN_SM,
 
-         NULL_PTR,
+         0,
 
         /**
          *  @brief This parameter defines the upper layer (UL) module
          *         to which the indication of the goto-sleep command
          *         shall be sent.
          */
-         LINIF_NONE,
+         LINIF_LIN_SM,
 
-         NULL_PTR,
+         0,
 
         /**
          *  @brief Defines the interval of calls to main functions per channel in milliseconds.
@@ -548,9 +867,9 @@ CONST(LinIf_ChannelConfigCfgType, LINIF_CONST) LinIf_SlaveChannelsConfig[LINIF_M
          *  @brief This parameter defines the upper layer (UL) module to which the confirmation
          *         of the wake-up shall be sent.
          */
-         LINIF_NONE,
+         LINIF_LIN_SM,
 
-         NULL_PTR,
+         0,
 
         /**
          *  @brief Reference to the CDD module description.
@@ -580,7 +899,7 @@ CONST(LinIf_ChannelConfigCfgType, LINIF_CONST) LinIf_SlaveChannelsConfig[LINIF_M
         /**
          *  @brief The maximum number of data frames that the channel can have.
          */
-         (uint16)3U,
+         (uint16)6U,
 
         /**
          *  @brief The configuration set of data frames that the channel has.
