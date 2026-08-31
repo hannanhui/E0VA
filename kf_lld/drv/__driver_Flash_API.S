@@ -4,12 +4,8 @@
 
 //###############################################################################	
     .EQU  __FLASH_MAX_SIZE__,	(2080 << 10)
-    // Must match FLS_MIN_OPERABLE_ADDRESS in Fls_Cfg.h (1KB).
-    // Do NOT use ".extern __Flash_Min_Size__" + LD/LD.W from .indata:
-    // absolute reloc of that symbol in RAM code can bind to a wrong flash
-    // address (observed: 0x17D0C inside LinTp_TxNSduCfg instead of the real
-    // __Flash_Min_Size__), then the min-address check returns PARAM_ERROR(0x0C).
-    .EQU  __FLASH_MIN_SIZE__,	0x400
+
+    .extern __Flash_Min_Size__
 
 //###############################################################################
 .macro __FLASH_Function__ name
@@ -108,9 +104,10 @@
     LD        R4, #__FLASH_MAX_SIZE__
     CMP       R3, R4
     JHI       FLASH_Erase_Fast_Return
-    // ++++++++++++++++++++++++++++++++++++++++++++++ Address can't be less than __FLASH_MIN_SIZE__
+    // ++++++++++++++++++++++++++++++++++++++++++++++ Address can't be less than __Flash_Min_Size__
     LD.W      R3, [SP + #1]
-    LD        R4, #__FLASH_MIN_SIZE__
+    LD        R4, #__Flash_Min_Size__
+    LD.W      R4, [R4]
     CMP       R4, R3
     JHI       FLASH_Erase_Fast_Return
     // ++++++++++++++++++++++++++++++++++++++++++++++ Address should be page aligned
@@ -175,9 +172,10 @@ FLASH_Erase_PRO_Unlocked:
     LD        R5, #__FLASH_MAX_SIZE__
     CMP       R4, R5
     JHI       FLASH_Erase_Lock_PRO_Return
-    // ++++++++++++++++++++++++++++++++++++++++++++++ Address can't be less than __FLASH_MIN_SIZE__
+    // ++++++++++++++++++++++++++++++++++++++++++++++ Address can't be less than __Flash_Min_Size__
     LD.W      R4, [SP + #1]
-    LD        R5, #__FLASH_MIN_SIZE__
+    LD        R5, #__Flash_Min_Size__
+    LD.W      R5, [R5]
     CMP       R5, R4
     JHI       FLASH_Erase_Lock_PRO_Return
     // ++++++++++++++++++++++++++++++++++++++++++++++ Address should be page aligned
@@ -327,8 +325,9 @@ FLASH_Erase_Fast_Return:
     LD        R3, #__FLASH_MAX_SIZE__
     CMP       R4, R3
     JHI       FLASH_Program_Fast_Return
-    // ++++++++++++++++++++++++++++++++++++++++++++++ Address can't be less than __FLASH_MIN_SIZE__
-    LD        R4, #__FLASH_MIN_SIZE__
+    // ++++++++++++++++++++++++++++++++++++++++++++++ Address can't be less than __Flash_Min_Size__
+    LD        R4, #__Flash_Min_Size__
+    LD.W      R4, [R4]
     CMP       R4, R1
     JHI       FLASH_Program_Fast_Return
     // ++++++++++++++++++++++++++++++++++++++++++++++ Address should be half page aligned
@@ -398,8 +397,9 @@ FLASH_Program_PRO_Unlocked:
     LD        R3, #__FLASH_MAX_SIZE__
     CMP       R4, R3
     JHI       FLASH_Program_Lock_PRO_Return
-    // ++++++++++++++++++++++++++++++++++++++++++++++ Address can't be less than __FLASH_MIN_SIZE__
-    LD        R4, #__FLASH_MIN_SIZE__
+    // ++++++++++++++++++++++++++++++++++++++++++++++ Address can't be less than __Flash_Min_Size__
+    LD        R4, #__Flash_Min_Size__
+    LD.W      R4, [R4]
     CMP       R4, R1
     JHI       FLASH_Program_Lock_PRO_Return
     // ++++++++++++++++++++++++++++++++++++++++++++++ Address should be half page aligned
@@ -552,8 +552,9 @@ FLASH_Program_Fast_Return:
     LD        R3, #__FLASH_MAX_SIZE__
     CMP       R4, R3
     JHI       FLASH_Program_NBytes_Fast_Return
-    // ++++++++++++++++++++++++++++++++++++++++++++++ Address can't be less than __FLASH_MIN_SIZE__
-    LD        R4, #__FLASH_MIN_SIZE__
+    // ++++++++++++++++++++++++++++++++++++++++++++++ Address can't be less than __Flash_Min_Size__
+    LD        R4, #__Flash_Min_Size__
+    LD.W      R4, [R4]
     CMP       R4, R1
     JHI       FLASH_Program_NBytes_Fast_Return
     // ++++++++++++++++++++++++++++++++++++++++++++++ Address should be one word aligned
@@ -625,8 +626,9 @@ FLASH_Program_NBytes_PRO_Unlocked:
     LD        R3, #__FLASH_MAX_SIZE__
     CMP       R4, R3
     JHI       FLASH_Program_NBytes_Lock_PRO_Return
-    // ++++++++++++++++++++++++++++++++++++++++++++++ Address can't be less than __FLASH_MIN_SIZE__
-    LD        R4, #__FLASH_MIN_SIZE__
+    // ++++++++++++++++++++++++++++++++++++++++++++++ Address can't be less than __Flash_Min_Size__
+    LD        R4, #__Flash_Min_Size__
+    LD.W      R4, [R4]
     CMP       R4, R1
     JHI       FLASH_Program_NBytes_Lock_PRO_Return
     // ++++++++++++++++++++++++++++++++++++++++++++++ Address should be one word aligned

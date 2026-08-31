@@ -21,6 +21,7 @@ extern unsigned int __bss_start__;
 extern unsigned int __bss_end__;
 extern unsigned int __data_start__;
 extern unsigned int __data_end__;
+extern unsigned int __data_load_start__;
 
 //#define Project_Type__cplusplus
 #ifdef  Project_Type__cplusplus
@@ -63,7 +64,8 @@ int startup(void)
 //	HWREG(0x40003900)=1;
 	HWREG(0x40003900)=0;	// cppcheck-suppress misra-c2012-11.4
 //############# init variable who have initialization	#############//
-	s = (unsigned int*)&__text_end__;		
+	/* Prefer LOADADDR(.data) when provided by linker (AT > flash). */
+	s = (unsigned int*)&__data_load_start__;
 	begin = (unsigned int*)&__data_start__;
 	end = (unsigned int*)&__data_end__;
 	while( begin <  end) {	// cppcheck-suppress comparePointers
@@ -122,7 +124,7 @@ static void __start_check_ram(void)
     unsigned int *end;
 
     /* Check data section */
-    s     = (unsigned int *)&__text_end__;
+    s     = (unsigned int *)&__data_load_start__;
     begin = (unsigned int *)&__data_start__;
     end   = (unsigned int *)&__data_end__;
     while (begin < end)
