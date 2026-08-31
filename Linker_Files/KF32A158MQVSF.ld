@@ -88,6 +88,15 @@ SECTIONS
 
   } > flash  
 /*#############################################################*/
+  /*
+   * Initialized RAM image (incl. .indata Flash API).
+   * Must use AT > flash so startup copy from __text_end__ loads the
+   * relocated code. Without AT>flash, LMA==VMA(ram) and the flash
+   * bytes after __text_end__ are not the linked .indata image — then
+   * LD R4,#__Flash_Min_Size__ inside __FLASH_Erase__ can become a
+   * wrong absolute (observed 0x17D0C inside LinTp_TxNSduCfg) and
+   * return PARAM_ERROR(0x0C).
+   */
   .data :
   {
   __data_start__ = .;    /*  address must aligned by 4 bytes under zero offset */
@@ -108,36 +117,42 @@ SECTIONS
     *(.data*)     /* global variable with  initialization */
      . = ALIGN(4);
   __data_end__ = .;
-    /*--------------------------------------------------*/
+  } > ram AT > flash
+
+  __data_load_start__ = LOADADDR(.data);
+
+/*#############################################################*/
+  .bss :
+  {
      . = ALIGN(4);
   __bss_start__ = .;    /* global variable with no initialization */
-    *(COMMON*) 
+    *(COMMON*)
     *(.bss*)
      . = ALIGN(4);
   __bss_end__ = .;
     /*--------------------------------------------------*/
      . = ALIGN(4);
-  __allot_end__ = .;  /* heap and stack space*/ 
+  __allot_end__ = .;  /* heap and stack space*/
   __Heap_Start__ = __allot_end__ ;
      PROVIDE_HIDDEN ( __heap_start = .);
      KEEP( *(.heap_mem*)  )
      . = ALIGN(4);
   __Logic_Heap_End__ = . ;
 
-    . = DEFINED(Heap_Mem) ? ALIGN(4)  : ( __Logic_Heap_End__ + __Heap_length__ ) ; 
+    . = DEFINED(Heap_Mem) ? ALIGN(4)  : ( __Logic_Heap_End__ + __Heap_length__ ) ;
      . = ALIGN(4);
      PROVIDE_HIDDEN ( __heap_end = .);
-  __Heap_End__ = . ; 
+  __Heap_End__ = . ;
     /*--------------------------------------------------*/
           __MAX_Stack_LIMITS__ =  ALIGN(4);
     /*--------------------------------------------------*/
      . = ALIGN(4);
          __LMA_STACK_LIMITS__ = DEFINED(Stack_Mem)? (__initial_sp - ( __Logic_Stack_Start__  - __Logic_Stack_End__ )): (. );
    . = __LMA_STACK_LIMITS__ ;
-   
+
   __Logic_Stack_End__  = . ;
        KEEP( *(.stack_mem*)  )
-  __Logic_Stack_Start__ = . ;  
+  __Logic_Stack_Start__ = . ;
     /*--------------------------------------------------*/
   __initial_sp = LENGTH(ram);
   PROVIDE(__Heap_length__ = 0x400 );/* defautl size */

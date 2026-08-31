@@ -131,8 +131,14 @@ P2CONST(Fls_ConfigType, FLS_VAR, FLS_APPL_CONST) Fls_CurrentConfigPtr = NULL_PTR
 
 /**
  * @brief const variable for define minimum operable size
+ *
+ * @note Place in .inrodata so it is copied to RAM with .indata Flash API.
+ *       __FLASH_Erase__ (vendor RAM code) does LD #__Flash_Min_Size__ then
+ *       LD.W; keeping the object in the RAM init image avoids a stale/wrong
+ *       flash absolute after startup copy.
  */
 /* PRQA S 0499,0602,1502 1 #KQR100011 */
+__attribute__((section(".inrodata"), used))
 const uint32 __Flash_Min_Size__ = (uint32)FLS_MIN_OPERABLE_ADDRESS;
 /******************************************************************************
  **                      Constant Declarations
